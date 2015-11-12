@@ -1,0 +1,68 @@
+
+
+
+# useful trick
+# less my_ark | python -mjson.tool
+
+# Change directory to ephemeral storage
+# os.chdir("/mnt")
+
+# example_ark
+# Mark’s ARKs (see his 11-4-15 email)
+# curl http://192.170.232.74:8080/alias/ | python -mjson.tool
+# curl http://192.170.232.74:8080/alias/ark:/31807/DC0-46c9419c-99c6-44bd-b554-5ee86b0173a2 | python -mjson.tool
+#example_ark = "http://192.170.232.74:8080/alias/ark:/31807/DC0-46c9419c-99c6-44bd-b554-5ee86b0173a2"
+
+# Arks with data: (Mark Asana 11-3-15)
+# example_ark = "http://192.170.232.74:8080/alias/ark:/31807/DC0-25a0b68b-12d0-47ea-b7eb-03bc5fc832b6"
+# example_ark = "http://192.170.232.74:8080/alias/ark:/31807/DC0-1e567401-055d-46d2-8f6c-f3b0608f3615
+# These include their origin urls:
+#
+# ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR188/ERR188021/ERR188021_1.fastq.gz
+# ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR188/ERR188021/ERR188021_2.fastq.gz
+# 
+# And our object storage urls:
+# 
+# s3://griffin-objstore.opensciencedatacloud.org/asgc-geuvadis/ERR188021_1.fastq.gz
+# s3://griffin-objstore.opensciencedatacloud.org/asgc-geuvadis/ERR188021_2.fastq.gz
+
+## THIS WORKS
+#for x in ark_urls:
+#    #pprint(x)
+#    matchObj = re.match( "^ftp://", x )
+#    if matchObj:
+#        print(x)
+
+##This works
+#for x in ark_urls:
+#    match_ftp = re.match( "^ftp://", x )
+#    match_s3 = re.match( "^s3://", x )
+#    if match_ftp:
+#        ftp_address = x
+#        print("ftp_address: " + x)
+#        
+#    if match_s3:
+#        s3_address = x
+#        print("s3_address:  " + x)
+
+# With data, you can now also find values in like so:
+
+# data["maps"][0]["id"]
+# data["masks"]["id"]
+# data["om_points"]
+
+    
+# import json
+# from pprint import pprint
+
+# with open('data.json') as data_file:    
+#     data = json.load(data_file)
+
+# pprint(data)
+
+# With data, you can now also find values in like so:
+
+# data["maps"][0]["id"]
+# data["masks"]["id"]
+# data["om_points"]
+
