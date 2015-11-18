@@ -1,0 +1,7 @@
+Script (Mark’s_ to upload large files to S3)
+wget https://gist.githubusercontent.com/MurphyMarkW/741bb3f64c9a63927c39/raw/86a690352ca1e6af2627edc5b758a0010c9b6b9a/multipart_upload.py
+# You'll need a credentials file, which should just contain a single json object w/ access_key, secret_key, host, port, and is_secure if you need to turn off ssl.
+
+## THIS WORKED
+ multipart_upload.py kevin_s3 asgc-geuvadis ERR188481.fastq.tar.gz < ERR188481.fastq.tar.gz
+# into to info in the repo if you get error (fixed it on local vm to get it working)
