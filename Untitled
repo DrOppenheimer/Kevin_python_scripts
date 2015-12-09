@@ -1,0 +1,6 @@
+import argparse
+parser = argparse.ArgumentParser(description= sys.argv[0] + 'A tool to extract ftp or S3 URLs from CDIS ARKs')
+parser.add_argument("-a", "--ark", help="ARK id to parse", action="store_true")
+parser.add_argument("-o", "--output", help="output ftp or s3 URL", action="store_true")
+args = parser.parse_args()
+print args
