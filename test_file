@@ -1,0 +1,6 @@
+
+ARK_parser_beta.py : A tool to extract ftp or S3 URLs from CDIS ARKs
+
+example ark: "http://192.170.232.74:8080/alias/ark:/31807/DC0-25a0b68b-12d0-47ea-b7eb-03bc5fc832b6"
+
+ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR188/ERR188021/ERR188021_1.fastq.gz
