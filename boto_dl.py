@@ -14,7 +14,6 @@ print("example file: \"ERR_tar.12Mb.gz\"")
 
 parser = argparse.ArgumentParser(description='Simple script to perform a boto download')
 parser.add_argument('-f','--file', help='file to download', required=True, default="test")
-
 parser.add_argument('-a','--access_key', help='file to download', required=True)
 parser.add_argument('-s','--secret_key', help='file to download', required=True)
 parser.add_argument('-b','--bucket_name', help='file to download', required=True)
@@ -22,9 +21,6 @@ parser.add_argument('-g','--gateway', help='file to download', required=True)
 #parser.add_argument('-b','--bar', help='Description for bar argument', required=True)
 #args = vars(parser.parse_args())
 args = parser.parse_args()
-
-#print("ARGS: "+ args)
-print("FILE: "+ args.file)
 
 ### Open connection
 conn = boto.connect_s3(

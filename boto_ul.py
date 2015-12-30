@@ -36,4 +36,4 @@ bucket = conn.get_bucket(args.bucket_name)
 
 ### Upload object to bucket::
 key = my_bucket.new_key(args.file)
-	key.set_contents_from_filename(args.file)
+key.set_contents_from_filename(args.file)
