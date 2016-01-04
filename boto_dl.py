@@ -31,7 +31,7 @@ if args.useparcel == "useparcel":
     aws_access_key_id = args.access_key,
     aws_secret_access_key = args.secret_key,
     host = args.gateway,
-    #port = 9000
+    port = 9000
     #is_secure=False, # uncomment if you are not using ssl
     calling_format = boto.s3.connection.OrdinaryCallingFormat(),
     )
@@ -40,7 +40,7 @@ else:
     aws_access_key_id = args.access_key,
     aws_secret_access_key = args.secret_key,
     host = args.gateway,
-    port = 9000,
+    #port = 9000,
     #is_secure=False, # uncomment if you are not using ssl
     calling_format = boto.s3.connection.OrdinaryCallingFormat(),
     )
