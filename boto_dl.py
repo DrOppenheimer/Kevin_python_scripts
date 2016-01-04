@@ -10,7 +10,7 @@ import boto.s3.connection
 #from os.path import basename
 #from pprint import pprint
 
-print("example file: \"ERR_tar.12Mb.gz\"")
+#print("example file: \"ERR_tar.12Mb.gz\"")
 
 parser = argparse.ArgumentParser(description='Simple script to perform a boto download')
 parser.add_argument('-f','--file', help='file to download', required=True, default="test")
