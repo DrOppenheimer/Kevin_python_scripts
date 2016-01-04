@@ -18,7 +18,7 @@ parser.add_argument('-a','--access_key', help='file to download', required=True)
 parser.add_argument('-s','--secret_key', help='file to download', required=True)
 parser.add_argument('-b','--bucket_name', help='file to download', required=True)
 parser.add_argument('-g','--gateway', help='file to download', required=True)
-parser.add_argument('-u','--useparcel', help='file to download', required=True)
+parser.add_argument('-u','--useparcel', help='file to download', required=False)
 #parser.add_argument('-p','--port', help='only used with -u|--useparcel, port number for parcel', default="9000")
 
 #parser.add_argument('-b','--bar', help='Description for bar argument', required=True)
