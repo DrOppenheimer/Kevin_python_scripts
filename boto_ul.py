@@ -48,3 +48,7 @@ bucket = conn.get_bucket(args.bucket_name)
 ### Upload object to bucket::
 key = bucket.new_key(args.file)
 key.set_contents_from_filename(args.file)
+
+### Set public read to all objects in a bucket::
+#for key in bucket.list():
+key.set_acl('public-read')
