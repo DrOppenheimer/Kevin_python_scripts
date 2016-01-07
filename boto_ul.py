@@ -14,11 +14,11 @@ print("example file: \"ERR_tar.12Mb.gz\"")
 
 parser = argparse.ArgumentParser(description='Simple script to perform a boto download')
 parser.add_argument('-f','--file', help='file to download', required=True, default="test")
-parser.add_argument('-a','--access_key', help='file to download', required=True)
-parser.add_argument('-s','--secret_key', help='file to download', required=True)
-parser.add_argument('-b','--bucket_name', help='file to download', required=True)
-parser.add_argument('-g','--gateway', help='file to download', required=True)
-parser.add_argument('-p','--useparcel', help='file to download', required=False, action='store_true', default=False)
+parser.add_argument('-a','--access_key', help='access key', required=True)
+parser.add_argument('-s','--secret_key', help='secret key', required=True)
+parser.add_argument('-b','--bucket_name', help='bucket name', required=True)
+parser.add_argument('-g','--gateway', help='gateway', required=True)
+parser.add_argument('-p','--useparcel', help='option to use parcel', required=False, action='store_true', default=False)
 args = parser.parse_args()
 
 ### Open connection
