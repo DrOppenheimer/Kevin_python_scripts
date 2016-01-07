@@ -31,7 +31,7 @@ if args.useparcel:
     aws_access_key_id = args.access_key,
     aws_secret_access_key = args.secret_key,
     host = args.gateway,
-    #port = 9000, # I don;t get this at all, script crashes when this is uncommented and run with test_rw_beta.sh, but it runs fine when executed by itself
+    #port = 9000, # I don't get this at all, script crashes when this is uncommented and run with test_rw_beta.sh, but it runs fine when executed by itself
     #is_secure=False, # uncomment if you are not using ssl
     calling_format = boto.s3.connection.OrdinaryCallingFormat(),
     )
