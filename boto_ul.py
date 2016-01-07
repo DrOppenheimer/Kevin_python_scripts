@@ -33,7 +33,7 @@ if args.useparcel:
     calling_format = boto.s3.connection.OrdinaryCallingFormat(),
     )
 else:
-    print "\n\nBoto Download Without Parcel\n\n"
+    print "\n\nBoto Upload Without Parcel\n\n"
     conn = boto.connect_s3(
     aws_access_key_id = args.access_key,
     aws_secret_access_key = args.secret_key,
