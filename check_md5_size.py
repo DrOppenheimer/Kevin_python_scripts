@@ -27,11 +27,11 @@ def check_md5_size(my_bucket="bucket_name", access_key="some_key", secret_key="s
         ### download object, get the time need to download
         #key = bucket.get_key('testobject.txt')
         tic = time.time()
-        key.get_contents_to_filename( key )
+        key.get_contents_to_filename(key)
         dlTime = time.time() - tic
         ### get md5 of downloaded object
         print ("calculating md5 " + key)
-        fileMd5 = generate_file_md5( key ) # uses function generate_file_md5 -- in your scripts
+        fileMd5 = generate_file_md5(key) # uses function generate_file_md5 -- in your scripts
         ### get size of downloaded object
         statinfo = os.stat( key )
         size = statinfo.st_size
