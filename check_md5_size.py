@@ -31,14 +31,14 @@ def check_md5_size(my_bucket="bucket_name", access_key="some_key", secret_key="s
         dlTime = time.time() - tic
         ### get md5 of downloaded object
         print ("calculating md5 " + key.name)
-        fileMd5 = generate_file_md5(key) # uses function generate_file_md5 -- in your scripts
+        fileMd5 = generate_file_md5(key.name) # uses function generate_file_md5 -- in your scripts
         ### get size of downloaded object
         #statinfo = os.stat( key )
         #size = statinfo.st_size
         size_gb = float(key.size) / (2**30)
         ### remove local copy of object
         print ("delete local copy of " + key)
-        os.remove( key )
+        os.remove(key.name)
         ### write stats to output
         LOGFILE.write(log_string)
         LOGFILE.flush()
