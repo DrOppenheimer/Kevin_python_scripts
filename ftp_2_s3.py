@@ -8,14 +8,6 @@ from boto.s3.key import Key
 import boto.s3.connection
 execfile("/home/ubuntu/git/Kevin_python_scripts/generate_file_md5.py")
 my_bucket="1000_genome_exome"
-#my_file="777.reamining_ul.2-8-16.split.aa"
-#my_file="777.reamining_ul.2-8-16.split.ab"
-#my_file="777.reamining_ul.2-8-16.split.ac"
-#my_file="777.reamining_ul.2-8-16.split.ad"
-#my_file="777.reamining_ul.2-8-16.split.ae"
-#my_file="777.reamining_ul.2-8-16.split.af"
-#my_file="777.reamining_ul.2-8-16.split.ag"
-#my_file="777.reamining_ul.2-8-16.split.ah"
 log_file=my_file + ".ul_log.txt"
 LOGFILE=open('./' + log_file, 'w+')
 LOGFILE.write('file_name' + '\t' + 'size(Gb)' + '\t' + 'md5' + '\t' + 'dl_time(s)' + '\t' + 'ul_time(s)' + '\n')
