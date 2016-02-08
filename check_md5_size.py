@@ -18,7 +18,9 @@ def check_md5_size(my_bucket="bucket_name", access_key="some_key", secret_key="s
     count=0
     count2=0
     for key in bucket.list():
-        print(key)
+        print(key.name)
+        print(key.size)
+        print(key.md5)
 
     #            count+=1
     # for key in bucket.list():
@@ -44,3 +46,4 @@ def check_md5_size(my_bucket="bucket_name", access_key="some_key", secret_key="s
     #     ### write stats to output
     #     LOGFILE.write(log_string)
     #     LOGFILE.flush()
+
