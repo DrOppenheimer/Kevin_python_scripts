@@ -37,7 +37,7 @@ def check_md5_size(my_bucket="bucket_name", access_key="some_key", secret_key="s
         #size = statinfo.st_size
         size_gb = float(key.size) / (2**30)
         ### remove local copy of object
-        print ("delete local copy of " + key)
+        print ("delete local copy of " + key.name)
         os.remove(key.name)
         ### write stats to output
         LOGFILE.write(log_string)
