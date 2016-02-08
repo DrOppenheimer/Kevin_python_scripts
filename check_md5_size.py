@@ -18,32 +18,28 @@ def check_md5_size(my_bucket="bucket_name", access_key="some_key", secret_key="s
     count=0
     count2=0
     for key in bucket.list():
-        print(key.name)
-        print(key.size)
-        print(key.md5)
-
-    #            count+=1
-    # for key in bucket.list():
-    #     ### Print percent complete
-    #     count2+=1
-    #     percentComplete = ( float(count2) / count ) * 100  
-    #     print("Percent complete: ", str(round(percentComplete,2)))
-    #     ### download object, get the time need to download
-    #     #key = bucket.get_key('testobject.txt')
-    #     tic = time.time()
-    #     key.get_contents_to_filename(key)
-    #     dlTime = time.time() - tic
-    #     ### get md5 of downloaded object
-    #     print ("calculating md5 " + key)
-    #     fileMd5 = generate_file_md5(key) # uses function generate_file_md5 -- in your scripts
-    #     ### get size of downloaded object
-    #     statinfo = os.stat( key )
-    #     size = statinfo.st_size
-    #     size_gb = float(size) / (2**30)
-    #     ### remove local copy of object
-    #     print ("delete local copy of " + key)
-    #     os.remove( key )
-    #     ### write stats to output
-    #     LOGFILE.write(log_string)
-    #     LOGFILE.flush()
+        count+=1
+    for key in bucket.list():
+        ### Print percent complete
+        count2+=1
+        percentComplete = ( float(count2) / count ) * 100  
+        print("Percent complete: ", str(round(percentComplete,2)))
+        ### download object, get the time need to download
+        #key = bucket.get_key('testobject.txt')
+        tic = time.time()
+        key.get_contents_to_filename(key.name)
+        dlTime = time.time() - tic
+        ### get md5 of downloaded object
+        print ("calculating md5 " + key.name)
+        fileMd5 = generate_file_md5(key) # uses function generate_file_md5 -- in your scripts
+        ### get size of downloaded object
+        #statinfo = os.stat( key )
+        #size = statinfo.st_size
+        size_gb = float(key.size) / (2**30)
+        ### remove local copy of object
+        print ("delete local copy of " + key)
+        os.remove( key )
+        ### write stats to output
+        LOGFILE.write(log_string)
+        LOGFILE.flush()
 
