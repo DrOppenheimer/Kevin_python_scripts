@@ -13,13 +13,14 @@ from pprint import pprint
 
 debug = 0
 
-print("example ark: \"http://192.170.232.74:8080/alias/ark:/31807/DC0-25a0b68b-12d0-47ea-b7eb-03bc5fc832b6\"")
+#print("example ark: \"http://192.170.232.74:8080/alias/ark:/31807/DC0-25a0b68b-12d0-47ea-b7eb-03bc5fc832b6\"")
+print("examples ark: \"https://signpost.opensciencedatacloud.org/alias/ark:/31807/DC0-009252ff-8766-48df-8fde-16278b95a97b\"")
 
 # enter the ark
 example_ark = input('Enter your ARK Address (surounded by quotes): ')
 
 # select_source
-# my_source = input('Enter your source ("s3" or "ftp"): ')
+my_source = input('Enter your source ("s3" or "ftp"): ')
 
 # get the ark basename
 ark_basename = basename(example_ark).rstrip()

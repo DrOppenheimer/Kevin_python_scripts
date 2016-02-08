@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # simple script to check filename, size, and md5 for list of files(objects) in buckeet
 # written to be run on AWS s3
-def check_md5_size(my_bucket="bucket_name", access_key="some_key", secret_key="some_secret_key"):
+def check_md5_size(my_bucket="bucket_name", access_key="some_key", secret_key="some_secret_key", md5_script="/home/ubuntu/git/Kevin_python_scripts/generate_file_md5.py"):
     import os
     import time
     import hashlib
     import boto
     from boto.s3.key import Key
     import boto.s3.connection
-    execfile("/home/ubuntu/git/Kevin_python_scripts/generate_file_md5.py")
+    execfile(md5_script)
     log_file=my_bucket + ".dictionary.txt"
     LOGFILE=open('./' + log_file, 'w+')
     LOGFILE.write('object_name' + '\t' + 'size(Gb)' + '\t' + 'md5' + '\t' + 'dl_time(s)' + '\n')
