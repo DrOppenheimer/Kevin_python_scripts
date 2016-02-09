@@ -11,7 +11,7 @@ def check_md5_size(my_bucket="bucket_name", access_key="some_key", secret_key="s
     execfile(md5_script)
     log_file=my_bucket + ".dictionary.txt"
     LOGFILE=open('./' + log_file, 'w+')
-    LOGFILE.write('object_name' + '\t' + 'size(Gb)' + '\t' + 'md5' + '\t' + 'dl_time(s)' + '\n')
+    LOGFILE.write('object_name' + '\t' + 'size(bytes)' + '\t' + 'size(Gb)'+ '\t' + 'md5' + '\t' + 'dl_time(s)' + '\n')
     con = boto.connect_s3(aws_access_key_id=access_key, aws_secret_access_key=secret_key)
     bucket=con.get_bucket(my_bucket)
     ### Get the number of items in the bucket
@@ -40,7 +40,7 @@ def check_md5_size(my_bucket="bucket_name", access_key="some_key", secret_key="s
         print ("delete local copy of " + key.name)
         os.remove(key.name)
         ### write stats to output
-        log_string = key.name + '\t' + str(size_gb) + '\t' + str(fileMd5) + '\t' + str(dlTime) + '\n'
+        log_string = key.name + '\t' + str(key.size) + '\t' + str(size_gb) + '\t' + str(fileMd5) + '\t' + str(dlTime) + '\n'
         LOGFILE.write(log_string)
         LOGFILE.flush()
 
