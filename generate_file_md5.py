@@ -15,4 +15,4 @@ def generate_file_md5(filename, blocksize=2**20):
             if not buf:
                 break
             m.update( buf )
-    return m.hexdigest()
+            return m.hexdigest()
