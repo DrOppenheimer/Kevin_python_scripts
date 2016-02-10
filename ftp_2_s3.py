@@ -1,12 +1,15 @@
 #!/usr/bin/env python
+
+import os
+import time
+import hashlib
+import boto
+import boto.s3.connection
+from boto.s3.key import Key
+from generate_file_md5 import generate_file_md5
+
 def ftp_2_s3(my_file="list_of_ftp_addresses", access_key="some_key", secret_key="some_secret_key"):
-    import os
-    import time
-    import hashlib
-    import boto
-    from boto.s3.key import Key
-    import boto.s3.connection
-    execfile("/home/ubuntu/git/Kevin_python_scripts/generate_file_md5.py")
+    #execfile("/home/ubuntu/git/Kevin_python_scripts/generate_file_md5.py")
     my_bucket="1000_genome_exome"
     log_file=my_file + ".ul_log.txt"
     LOGFILE=open('./' + log_file, 'w+')
@@ -26,33 +29,40 @@ def ftp_2_s3(my_file="list_of_ftp_addresses", access_key="some_key", secret_key=
             download_string = "wget " + line
             # system call to do the download
             tic = time.time()
-            os.system(download_string)
-            dlTime = time.time() - tic
-            #### get md5 for file downloaded from ftp
-            print ("calculating dl md5 " + fileName)
-            dlFileMd5 = generate_file_md5(fileName) # uses function generate_file_md5 -- in your scripts
-            #### get size of file downloaded from ftp
-            statinfo = os.stat(fileName)
-            dlSize = statinfo.st_size
-            #size_gb = float(size) / (2**30)
-            #### upload to s3
-            print ("uploading " + fileName)		
-            tic = time.time()
-            con = boto.connect_s3(aws_access_key_id=access_key, aws_secret_access_key=secret_key )
-            bucket=con.get_bucket(my_bucket)
-            key=Key(name=fileName, bucket=bucket)
-            key.set_contents_from_filename(fileName)
-            ulTime = time.time() - tic
-            ### remove local copy of file
-            print ("delete local copy of " + fileName)
-            os.remove(fileName)
-            ### Get the md5 for the file on s3
-            s3FileMd5=bucket.get_key(key).etag[1 :-1]
-            ### Get the size for the file on s3
-            s3Size=key.size
-            #### print to log
-            print ("printing to log " + fileName)
-            log_string = fileName + '\t' + str(dlSize) + '\t' + str(dlFileMd5) + '\t' + str(dlTime) + '\t' + str(s3Size) + '\t' + str(s3FileMd5) + '\t' + str(ulTime) + '\n'
-            print ("Done processing sample ( " + str(sample) + " ) :: " + fileName)
-            LOGFILE.write(log_string)
-            LOGFILE.flush()
+            #os.system(download_string)
+            ##subprocess.Popen(["wget", line])
+            wget_status=subprocess.call(["wget", line])
+            if wget_status==1:
+                dlTime = time.time() - tic
+                #### get md5 for file downloaded from ftp
+                print ("calculating dl md5 " + fileName)
+                dlFileMd5 = generate_file_md5(fileName) # uses function generate_file_md5 -- in your scripts
+                #### get size of file downloaded from ftp
+                statinfo = os.stat(fileName)
+                dlSize = statinfo.st_size
+                #size_gb = float(size) / (2**30)
+                #### upload to s3
+                print ("uploading " + fileName)		
+                tic = time.time()
+                con = boto.connect_s3(aws_access_key_id=access_key, aws_secret_access_key=secret_key )
+                bucket=con.get_bucket(my_bucket)
+                key=Key(name=fileName, bucket=bucket)
+                key.set_contents_from_filename(fileName)
+                ulTime = time.time() - tic
+                ### remove local copy of file
+                print ("delete local copy of " + fileName)
+                os.remove(fileName)
+                ### Get the md5 for the file on s3
+                s3FileMd5=bucket.get_key(key).etag[1 :-1]
+                ### Get the size for the file on s3
+                s3Size=key.size
+                #### print to log
+                print ("printing to log " + fileName)
+                log_string = fileName + '\t' + str(dlSize) + '\t' + str(dlFileMd5) + '\t' + str(dlTime) + '\t' + str(s3Size) + '\t' + str(s3FileMd5) + '\t' + str(ulTime) + '\n'
+                print ("Done processing sample ( " + str(sample) + " ) :: " + fileName)
+                LOGFILE.write(log_string)
+                LOGFILE.flush()
+            else:
+                log_string = fileName + '\t' + "wget failed" + '\n'
+                LOGFILE.write(log_string)
+                LOGFILE.flush()
