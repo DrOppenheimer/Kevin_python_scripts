@@ -23,7 +23,7 @@ LOGFILE = open('./' + args.bucket_name + '.ul_log.txt', 'w+')
 LOGFILE.write('file_name' + '\t' + 'local_size(bytes)' + '\t' + 'local_md5' + '\t' + 'dl_time(s)' + '\t' + 's3_size(bytes)' + '\t' + 's3_md5' + '\t' + 'ul_time(s)' + '\n')
 LOGFILE.flush()
 sample=0
-with open(my_file) as f:
+with open(args.list) as f:
         for line in f:
             sample += 1
             splitLine = line.split("/")
