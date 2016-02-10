@@ -20,7 +20,7 @@ args = parser.parse_args()
 #def ftp_2_s3(my_file=args.list, access_key=args.access_key, args.secret_key="some_secret_key"):
 #execfile("/home/ubuntu/git/Kevin_python_scripts/generate_file_md5.py")
 #my_bucket="1000_genome_exome"
-LOGFILE = open('./' + args.bucket_name + '.ul_log.txt', 'w+')
+LOGFILE = open('./' + args.list + '.ul_log.txt', 'w+')
 LOGFILE.write('file_name' + '\t' + 'local_size(bytes)' + '\t' + 'local_md5' + '\t' + 'dl_time(s)' + '\t' + 's3_size(bytes)' + '\t' + 's3_md5' + '\t' + 'ul_time(s)' + '\n')
 LOGFILE.flush()
 sample=0
