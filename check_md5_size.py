@@ -8,7 +8,7 @@ def check_md5_size(my_bucket="bucket_name", access_key="some_key", secret_key="s
     import boto
     from boto.s3.key import Key
     import boto.s3.connection
-    execfile(md5_script)
+    #execfile(md5_script)
     log_file=my_bucket + ".dictionary.txt"
     LOGFILE=open('./' + log_file, 'w+')
     #LOGFILE.write('object_name' + '\t' + 'size(bytes)' + '\t' + 'size(Gb)'+ '\t' + 'md5' + '\t' + 'dl_time(s)' + '\n')
@@ -31,7 +31,7 @@ def check_md5_size(my_bucket="bucket_name", access_key="some_key", secret_key="s
         #dlTime = time.time() - tic
         ### get md5 of downloaded object
         print ("calculating md5 " + key.name)
-        fileMd5 = generate_file_md5(key.name) # uses function generate_file_md5 -- in your scripts
+        #fileMd5 = generate_file_md5(key.name) # uses function generate_file_md5 -- in your scripts
         ### md5 of object without downloading it
         fileMd5=bucket.get_key(key).etag[1 :-1]
         ### get size in Gb without downloading it (bytes and Gb size are in the report)
