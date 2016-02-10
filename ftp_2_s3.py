@@ -39,6 +39,7 @@ with open(args.list) as f:
             tic = time.time()
             #os.system(download_string)
             ##subprocess.Popen(["wget", line])
+            line = line.rstrip("\n")
             wget_status=subprocess.call(["wget", line])
             if wget_status==1:
                 dlTime = time.time() - tic
