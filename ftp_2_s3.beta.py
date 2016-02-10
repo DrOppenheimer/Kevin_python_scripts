@@ -22,8 +22,8 @@ def ftp_dl(line, access_key, secret_key, bucket_name):
     line = line.rstrip("\n")
     tic = time.time()
     wget_status=subprocess.call(["wget", line])
+    dlTime = time.time() - tic
     if wget_status==0:
-        dlTime = time.time() - tic
         print ("calculating dl md5 " + fileName)   #### get md5 for file downloaded from ftp
         dlFileMd5 = generate_file_md5(fileName)    # uses function generate_file_md5 -- in your scripts
         statinfo = os.stat(fileName)               #### get size of file downloaded from ftp
