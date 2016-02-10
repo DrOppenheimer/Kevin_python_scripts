@@ -40,7 +40,8 @@ def check_md5_size(my_bucket="bucket_name", access_key="some_key", secret_key="s
         #print ("delete local copy of " + key.name)
         #os.remove(key.name)
         ### write stats to output
-        log_string = key.name + '\t' + str(key.size) + '\t' + str(size_gb) + '\t' + str(fileMd5) + '\t' + str(dlTime) + '\n'
+        #log_string = key.name + '\t' + str(key.size) + '\t' + str(size_gb) + '\t' + str(fileMd5) + '\t' + str(dlTime) + '\n'
+        log_string = key.name + '\t' + str(key.size) + '\t' + str(size_gb) + '\t' + str(fileMd5) + '\n'
         LOGFILE.write(log_string)
         LOGFILE.flush()
 
