@@ -22,13 +22,13 @@ def ftp_dl(line, access_key, secret_key, bucket_name):
     line = line.rstrip("\n")
     tic = time.time()
     wget_status=subprocess.call(["wget", line])
+    dlTime = time.time() - tic
     if wget_status==0:
-        dlTime = time.time() - tic
-        print ("calculating dl md5 " + fileName) #### get md5 for file downloaded from ftp
-        dlFileMd5 = generate_file_md5(fileName) # uses function generate_file_md5 -- in your scripts
-        statinfo = os.stat(fileName) #### get size of file downloaded from ftp
-        dlSize = statinfo.st_size #size_gb = float(size) / (2**30)
-        print ("uploading " + fileName) #### upload to s3
+        print ("calculating dl md5 " + fileName)   #### get md5 for file downloaded from ftp
+        dlFileMd5 = generate_file_md5(fileName)    # uses function generate_file_md5 -- in your scripts
+        statinfo = os.stat(fileName)               #### get size of file downloaded from ftp
+        dlSize = statinfo.st_size                  #size_gb = float(size) / (2**30)
+        print ("uploading " + fileName)            #### upload to s3
         tic = time.time()
         con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key )
         bucket=con.get_bucket(args.bucket_name)
@@ -41,9 +41,9 @@ def ftp_dl(line, access_key, secret_key, bucket_name):
             log_string = fileName + '\t' + "rm failed" + '\n'
             LOGFILE.write(log_string)
             LOGFILE.flush()
-        s3FileMd5=bucket.get_key(key).etag[1 :-1] ### Get the md5 for the file on s3
-        s3Size=key.size ### Get the size for the file on s3
-        print ("printing to log " + fileName) #### print to log
+        s3FileMd5=bucket.get_key(key).etag[1 :-1]  ### Get the md5 for the file on s3
+        s3Size=key.size                            ### Get the size for the file on s3
+        print ("printing to log " + fileName)      #### print to log
         log_string = fileName + '\t' + str(dlSize) + '\t' + str(dlFileMd5) + '\t' + str(dlTime) + '\t' + str(s3Size) + '\t' + str(s3FileMd5) + '\t' + str(ulTime) + '\n'
         print ("Done processing sample ( " + str(sample) + " ) :: " + fileName)
         LOGFILE.write(log_string)
