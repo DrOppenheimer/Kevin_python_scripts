@@ -20,6 +20,7 @@ args = parser.parse_args()
 
 def ftp_dl(line, access_key, secret_key, bucket_name):
     line = line.rstrip("\n")
+    tic = time.time()
     wget_status=subprocess.call(["wget", line])
     if wget_status==0:
         dlTime = time.time() - tic
