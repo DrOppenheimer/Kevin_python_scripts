@@ -4,6 +4,7 @@ import argparse
 import os
 import time
 import hashlib
+import subprocess
 import boto
 import boto.s3.connection
 from boto.s3.key import Key
