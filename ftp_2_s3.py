@@ -11,9 +11,9 @@ from generate_file_md5 import generate_file_md5
 
 parser = argparse.ArgumentParser(description='Simple script to perform a boto download')
 parser.add_argument('-l','--list', help='file with list of ftp addresses', required=True, default="test")
-parser.add_argument('-a','--access_key', help='access key', required=True)
-parser.add_argument('-s','--secret_key', help='secret key', required=True)
-parser.add_argument('-b','--bucket_name', help='bucket name', required=True)
+parser.add_argument('-a','--access_key', help='access key', required=True, required=True)
+parser.add_argument('-s','--secret_key', help='secret key', required=True, required=True)
+parser.add_argument('-b','--bucket_name', help='bucket name', required=True, default="1000_genome_exome")
 args = parser.parse_args()
 
 #def ftp_2_s3(my_file=args.list, access_key=args.access_key, args.secret_key="some_secret_key"):
