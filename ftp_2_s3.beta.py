@@ -88,7 +88,7 @@ with open(args.list) as f:
         tic = time.time()
         #os.system(download_string)
         ##subprocess.Popen(["wget", line])
-        while ftp_status < retry:
+        while ftp_status < args.retry:
             ftp_status=ftp_dl(line=line, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name)
         
     
