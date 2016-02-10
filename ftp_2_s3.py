@@ -14,6 +14,7 @@ parser = argparse.ArgumentParser(description='Simple script to perform a boto do
 parser.add_argument('-l','--list', help='file with list of ftp addresses', required=True, default="test")
 parser.add_argument('-a','--access_key', help='access key', required=True)
 parser.add_argument('-s','--secret_key', help='secret key', required=True)
+parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
 parser.add_argument('-b','--bucket_name', help='bucket name', default="1000_genome_exome")
 args = parser.parse_args()
 
@@ -60,7 +61,12 @@ with open(args.list) as f:
                 ulTime = time.time() - tic
                 ### remove local copy of file
                 print ("delete local copy of " + fileName)
-                os.remove(fileName)
+                #os.remove(fileName)
+                remove_status=subprocess.call(["rm", fileName])
+                if remove_status!=1:
+                    log_string = fileName + '\t' + "rm failed" + '\n'
+                    LOGFILE.write(log_string)
+                    LOGFILE.flush()
                 ### Get the md5 for the file on s3
                 s3FileMd5=bucket.get_key(key).etag[1 :-1]
                 ### Get the size for the file on s3
@@ -72,7 +78,12 @@ with open(args.list) as f:
                 LOGFILE.write(log_string)
                 LOGFILE.flush()
             else:
-                log_string = fileName + '\t' + "wget failed" + '\n'
+                remove_status=subprocess.call(["rm", fileName])
+                if remove_status!=1:
+                    log_string = fileName + '\t' + "rm of failed download failed" + '\n'
+                    LOGFILE.write(log_string)
+                    LOGFILE.flush()
+                log_string = fileName + '\t' + "wget of failed" + '\n'
                 LOGFILE.write(log_string)
                 LOGFILE.flush()
     
