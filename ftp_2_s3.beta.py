@@ -23,7 +23,7 @@ def ftp_dl(line, access_key, secret_key, bucket_name):
     tic = time.time()
     wget_status=subprocess.call(["wget", line])
     dlTime = time.time() - tic
-    if wget_status==0:
+    if wget_status == 0:
         print ("calculating dl md5 " + fileName)   #### get md5 for file downloaded from ftp
         dlFileMd5 = generate_file_md5(fileName)    # uses function generate_file_md5 -- in your scripts
         statinfo = os.stat(fileName)               #### get size of file downloaded from ftp
@@ -37,7 +37,7 @@ def ftp_dl(line, access_key, secret_key, bucket_name):
         ulTime = time.time() - tic
         print ("delete local copy of " + fileName) ### remove local copy of file
         remove_status=subprocess.call(["rm", fileName])
-        if remove_status==1:
+        if remove_status != 0:
             log_string = fileName + '\t' + "rm failed" + '\n'
             LOGFILE.write(log_string)
             LOGFILE.flush()
