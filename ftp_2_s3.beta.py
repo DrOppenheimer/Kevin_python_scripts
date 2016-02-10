@@ -21,7 +21,7 @@ args = parser.parse_args()
 def ftp_dl(line, access_key, secret_key, bucket_name):
     line = line.rstrip("\n")
     wget_status=subprocess.call(["wget", line])
-    if wget_status==1:
+    if wget_status==0:
         dlTime = time.time() - tic
         #### get md5 for file downloaded from ftp
         print ("calculating dl md5 " + fileName)
@@ -58,11 +58,11 @@ def ftp_dl(line, access_key, secret_key, bucket_name):
         LOGFILE.flush()
     else:
         remove_status=subprocess.call(["rm", fileName])
-        if remove_status != 1:
+        if remove_status != 0:
             log_string = fileName + '\t' + "rm of failed download failed" + '\n'
             LOGFILE.write(log_string)
             LOGFILE.flush()
-    log_string = fileName + '\t' + "wget of failed" + '\n'
+    log_string = fileName + '\t' + "wget failed" + '\n'
     LOGFILE.write(log_string)
     LOGFILE.flush()
     return wget_status
