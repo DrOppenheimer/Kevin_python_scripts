@@ -60,7 +60,7 @@ if __name__ == '__main__':
             break
         
         ramdisk.seek(0)
-        logging.ingo('Uploading chunk {}'.format(i))
+        logging.info('Uploading chunk {}'.format(i))
         
         try: mp.upload_part_from_file(ramdisk, part_num=i, size=size)
         except Exception as err:
