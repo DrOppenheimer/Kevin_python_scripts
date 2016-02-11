@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+# modified slighltly -- comment out creds -- kevin 2-11-16
 import sys
 import json
 import mmap
