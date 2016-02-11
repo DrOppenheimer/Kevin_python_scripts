@@ -58,10 +58,10 @@ def ftp_dl(line, access_key, secret_key, bucket_name):
             log_string = fileName + '\t' + "rm of failed download failed" + '\n'
             LOGFILE.write(log_string)
             LOGFILE.flush()
-    log_string = fileName + '\t' + "wget failed" + '\n'
-    LOGFILE.write(log_string)
-    LOGFILE.flush()
-    return wget_status
+            log_string = fileName + '\t' + "wget failed" + '\n'
+            LOGFILE.write(log_string)
+            LOGFILE.flush()
+            return wget_status
 
 ### MAIN ###
 LOGFILE = open('./' + args.list + '.ul_log.txt', 'w+')
