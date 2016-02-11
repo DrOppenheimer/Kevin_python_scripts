@@ -16,7 +16,7 @@ parser.add_argument('-l','--list', help='file with list of ftp addresses', requi
 parser.add_argument('-a','--access_key', help='access key', required=True)
 parser.add_argument('-s','--secret_key', help='secret key', required=True)
 parser.add_argument('-b','--bucket_name', help='bucket name', default="1000_genome_exome")
-parser.add_srgument('-c','--credentials', help='credentials file for multipart upload: access_key, secret_key', required=True)
+parser.add_argument('-c','--credentials', help='credentials file for multipart upload: access_key, secret_key', required=True)
 parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
 args = parser.parse_args()
 
