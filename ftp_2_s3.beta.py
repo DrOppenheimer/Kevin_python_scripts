@@ -48,7 +48,7 @@ def ftp_dl(line, access_key, secret_key, bucket_name):
             LOGFILE.write(log_string)
             LOGFILE.flush()
         s3FileMd5=bucket.get_key(key).etag[1 :-1]  ### Get the md5 for the file on s3
-        s3Size=key.size                            ### Get the size for the file on s3
+        s3Size=bucket.lookup(fileName).size                            ### Get the size for the file on s3
         print ("printing to log " + fileName)      #### print to log
         if dlSize > 4*(2**30):
             log_string = fileName + '\t' + str(dlSize) + '\t' + str(dlFileMd5) + '\t' + str(dlTime) + '\t' + str(s3Size) + '\t' + str(s3FileMd5) + '\t' + str(ulTime) + '\t' + "File > 4Gb (4*(2^30) bytes), used multipart upload - upload md5 WILL NOT match dl md5" '\n'
