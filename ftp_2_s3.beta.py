@@ -7,6 +7,7 @@ import hashlib
 import subprocess
 import boto
 import boto.s3.connection
+import multipart_upload
 from boto.s3.key import Key
 from generate_file_md5 import generate_file_md5
 
@@ -15,6 +16,7 @@ parser.add_argument('-l','--list', help='file with list of ftp addresses', requi
 parser.add_argument('-a','--access_key', help='access key', required=True)
 parser.add_argument('-s','--secret_key', help='secret key', required=True)
 parser.add_argument('-b','--bucket_name', help='bucket name', default="1000_genome_exome")
+parser.add_srgument('-c','--credentials', help='credentials file for multipart upload: access_key, secret_key', required=True)
 parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
 args = parser.parse_args()
 
@@ -33,7 +35,9 @@ def ftp_dl(line, access_key, secret_key, bucket_name):
         con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key )
         bucket=con.get_bucket(args.bucket_name)
         key=Key(name=fileName, bucket=bucket)
-        key.set_contents_from_filename(fileName)
+        #key.set_contents_from_filename(fileName) # maybe do check and multipart for anything over a certain size
+        upload_string = "multipart_upload.py" + " creds " + args.bucket_name + " " + fileName + " < " + fileName 
+        os.system(upload_string)
         ulTime = time.time() - tic
         print ("delete local copy of " + fileName) ### remove local copy of file
         remove_status=subprocess.call(["rm", fileName])
