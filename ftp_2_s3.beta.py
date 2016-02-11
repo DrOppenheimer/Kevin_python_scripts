@@ -35,9 +35,11 @@ def ftp_dl(line, access_key, secret_key, bucket_name):
         con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key )
         bucket=con.get_bucket(args.bucket_name)
         key=Key(name=fileName, bucket=bucket)
-        #key.set_contents_from_filename(fileName) # maybe do check and multipart for anything over a certain size
-        upload_string = "multipart_upload.py" + " creds " + args.bucket_name + " " + fileName + " < " + fileName 
-        os.system(upload_string)
+        if dlSize > 4*(2**30): # use multipart upload for anything larger than 4Gb 
+            upload_string = "multipart_upload.py" + " creds " + args.bucket_name + " " + fileName + " < " + fileName 
+            os.system(upload_string)
+        else:
+            key.set_contents_from_filename(fileName) # maybe do check and multipart for anything over a certain size
         ulTime = time.time() - tic
         print ("delete local copy of " + fileName) ### remove local copy of file
         remove_status=subprocess.call(["rm", fileName])
@@ -48,7 +50,10 @@ def ftp_dl(line, access_key, secret_key, bucket_name):
         s3FileMd5=bucket.get_key(key).etag[1 :-1]  ### Get the md5 for the file on s3
         s3Size=key.size                            ### Get the size for the file on s3
         print ("printing to log " + fileName)      #### print to log
-        log_string = fileName + '\t' + str(dlSize) + '\t' + str(dlFileMd5) + '\t' + str(dlTime) + '\t' + str(s3Size) + '\t' + str(s3FileMd5) + '\t' + str(ulTime) + '\n'
+        if dlSize > 4*(2**30):
+            log_string = fileName + '\t' + str(dlSize) + '\t' + str(dlFileMd5) + '\t' + str(dlTime) + '\t' + str(s3Size) + '\t' + str(s3FileMd5) + '\t' + str(ulTime) + '\t' + "File > 4Gb (4*(2^30) bytes), used multipart upload - upload md5 WILL NOT match dl md5" '\n'
+        else:
+            log_string = fileName + '\t' + str(dlSize) + '\t' + str(dlFileMd5) + '\t' + str(dlTime) + '\t' + str(s3Size) + '\t' + str(s3FileMd5) + '\t' + str(ulTime) + '\n'
         print ("Done processing sample ( " + str(sample) + " ) :: " + fileName)
         LOGFILE.write(log_string)
         LOGFILE.flush()
