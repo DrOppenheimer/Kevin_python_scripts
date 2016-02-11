@@ -40,10 +40,10 @@ if __name__ == '__main__':
     conn = boto.connect_s3(
         aws_access_key_id     = credentials.get('access_key'),
         aws_secret_access_key = credentials.get('secret_key'),
-        host                  = credentials.get('host'),
-        port                  = credentials.get('port'),
-        is_secure             = credentials.get('is_secure', True),
-        calling_format        = boto.s3.connection.OrdinaryCallingFormat(),
+        #host                  = credentials.get('host'),
+        #port                  = credentials.get('port'),
+        #is_secure             = credentials.get('is_secure', True),
+        #calling_format        = boto.s3.connection.OrdinaryCallingFormat(),
     )
 
     mp = conn.get_bucket(args.bucket).initiate_multipart_upload(args.key)
