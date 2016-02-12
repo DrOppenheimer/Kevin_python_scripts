@@ -11,7 +11,7 @@ def generate_file_md5(filename):
     with open(filename,'rb') as f: 
         for chunk in iter(lambda: f.read(8192), b''): 
             md5.update(chunk)
-    return md5.digest()
+    return md5.hexdigest()
 
 # #def generate_file_md5(rootdir, filename, blocksize=2**20):
 # def generate_file_md5(filename, blocksize=2**20):
