@@ -18,7 +18,7 @@ parser.add_argument('-s','--secret_key', help='secret key', required=True)
 parser.add_argument('-b','--bucket_name', help='bucket name', default="1000_genome_exome")
 parser.add_argument('-c','--credentials', help='credentials file for multipart upload: access_key, secret_key', required=True)
 parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
-parser.add_argument('-k', '--', help='provide a list ( name \t md5 ) to compare against', default=0)
+parser.add_argument('-k', '--md5_ref_dictionary', help='provide a list ( name \t md5 ) to compare against', default=0)
 args = parser.parse_args()
 
 def get_value(my_key, my_dictionary):
