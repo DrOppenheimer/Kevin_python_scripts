@@ -119,4 +119,4 @@ with open(args.list) as f:
         fileName = fileName.rstrip("\n")
         print ("Processing sample ( " + str(sample) + " ) :: " + fileName)
         while ftp_status < args.retry:
-            ftp_status=ftp_dl(line=line, fileName=fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, compare_md5=compare_md5, md5_ref_dictionary=md5_ref_dictionary)        
+            ftp_status=ftp_dl(line=line, fileName=fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, compare_md5=args.compare_md5, md5_ref_dictionary=args.md5_ref_dictionary)        
