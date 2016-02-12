@@ -7,9 +7,9 @@
 import hashlib
 import os
 
-def generate_file_md5(filename, blocksize=2**20):
+def generate_file_md5(rootdir, filename, blocksize=2**20):
     m = hashlib.md5()
-    with open( os.path.join(filename) , "rb" ) as f:
+    with open( os.path.join(rootdir, filename) , "rb" ) as f:
         while True:
             buf = f.read(blocksize)
             if not buf:
