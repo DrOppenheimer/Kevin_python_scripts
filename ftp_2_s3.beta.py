@@ -102,9 +102,12 @@ if args.md5_ref_dictionary != 0:
     md5_ref_dictionary = {}
     with open(args.md5_ref_dictionary) as f:
         for line in f:
+            line = line.rstrip("\n")
             (key, val) = line.split('\t')
             md5_ref_dictionary[key] = val
-
+else:
+    md5_ref_dictionary = 0
+    
 # heavy lifting 
 LOGFILE = open('./' + args.list + '.ul_log.txt', 'w+')
 LOGFILE.write('file_name' + '\t' + 'ref_md5' +'\t' + 'local_size(bytes)' + '\t' + 'local_md5' + '\t' + 'local_md5_check' + '\t' + 'dl_time(s)' + '\t' + 's3_size(bytes)' + '\t' + 's3_md5' + '\t' + 's3_md5_check' + '\t' + 'ul_time(s)' + '\n')
@@ -119,4 +122,4 @@ with open(args.list) as f:
         fileName = fileName.rstrip("\n")
         print ("Processing sample ( " + str(sample) + " ) :: " + fileName)
         while ftp_status < args.retry:
-            ftp_status=ftp_dl(line=line, fileName=fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, md5_ref_dictionary=args.md5_ref_dictionary)        
+            ftp_status=ftp_dl(line=line, fileName=fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, md5_ref_dictionary)        
