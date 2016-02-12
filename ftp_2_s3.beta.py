@@ -102,7 +102,7 @@ if args.md5_ref_dictionary != 0:
     my_md5_ref_dictionary = {}
     for line in open(args.md5_ref_dictionary):
         (key,val) = line.split('\t')
-         md5_ref_dictionary[key] = val
+         my_md5_ref_dictionary[key] = val
 else:
     my_md5_ref_dictionary = 0      
     # with open(args.md5_ref_dictionary) as f:
