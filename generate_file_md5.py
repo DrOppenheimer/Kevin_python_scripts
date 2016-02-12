@@ -6,7 +6,7 @@
 
 import hashlib
 
-def checksum_md5(filename):
+def generate_file_md5(filename):
     md5 = hashlib.md5()
     with open(filename,'rb') as f: 
         for chunk in iter(lambda: f.read(8192), b''): 
