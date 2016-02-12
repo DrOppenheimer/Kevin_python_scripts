@@ -4,7 +4,7 @@
 # http://stackoverflow.com/questions/1131220/get-md5-hash-of-big-files-in-python
 # execfile("~/git/Kevin_python_scripts/generate_file_md5.py")
 
-#import hashlib
+import hashlib
 import os
 import subprocess
 
