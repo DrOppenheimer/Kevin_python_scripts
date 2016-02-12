@@ -99,14 +99,20 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
 
 # read in compare list if option is specified
 if args.md5_ref_dictionary != 0:
-    md5_ref_dictionary = {}
-    with open(args.md5_ref_dictionary) as f:
-        for line in f:
-            line = line.rstrip("\n")
-            (key, val) = line.split('\t')
-            md5_ref_dictionary[key] = val
+    my_md5_ref_dictionary = {}
+    for line in open(args.md5_ref_dictionary):
+        (key,val) = line.split('\t')
+         md5_ref_dictionary[key] = val
 else:
-    md5_ref_dictionary = 0
+    my_md5_ref_dictionary = 0      
+    # with open(args.md5_ref_dictionary) as f:
+#         for line in f:
+#             line = line.rstrip("\n")
+#             (key, val) = line.split('\t')
+#             md5_ref_dictionary[key] = val
+# else:
+#     md5_ref_dictionary = 0
+
     
 # heavy lifting 
 LOGFILE = open('./' + args.list + '.ul_log.txt', 'w+')
@@ -122,4 +128,4 @@ with open(args.list) as f:
         fileName = fileName.rstrip("\n")
         print ("Processing sample ( " + str(sample) + " ) :: " + fileName)
         while ftp_status < args.retry:
-            ftp_status=ftp_dl(line=line, fileName=fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, md5_ref_dictionary=md5_ref_dictionary)        
+            ftp_status=ftp_dl(line=line, fileName=fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, md5_ref_dictionary=my_md5_ref_dictionary)        
