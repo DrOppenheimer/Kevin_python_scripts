@@ -98,20 +98,21 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
 ### MAIN ###
 
 # read in compare list if option is specified
+#     my_md5_ref_dictionary = {}
+#     for line in open(args.md5_ref_dictionary):
+#         (key,val) = line.split('\t')
+#         my_md5_ref_dictionary[key] = val
+# else:
+#     my_md5_ref_dictionary = 0 
 if args.md5_ref_dictionary != 0:
     my_md5_ref_dictionary = {}
-    for line in open(args.md5_ref_dictionary):
-        (key,val) = line.split('\t')
-        my_md5_ref_dictionary[key] = val
+    with open(args.md5_ref_dictionary) as f:
+        for line in f:
+            line = line.rstrip("\n")
+            (key, val) = line.split('\t')
+            my_md5_ref_dictionary[key] = val
 else:
-    my_md5_ref_dictionary = 0      
-    # with open(args.md5_ref_dictionary) as f:
-#         for line in f:
-#             line = line.rstrip("\n")
-#             (key, val) = line.split('\t')
-#             md5_ref_dictionary[key] = val
-# else:
-#     md5_ref_dictionary = 0
+    my_md5_ref_dictionary = 0
 
     
 # heavy lifting 
