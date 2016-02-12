@@ -18,7 +18,7 @@ parser.add_argument('-s','--secret_key', help='secret key', required=True)
 parser.add_argument('-b','--bucket_name', help='bucket name', default="1000_genome_exome")
 parser.add_argument('-c','--credentials', help='credentials file for multipart upload: access_key, secret_key', required=True)
 parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
-parser.add_argument('-k', '--md5_ref_dictionary', help='provide a list ( name \t md5 ) to compare against', default=0)
+parser.add_argument('-k', '--', help='provide a list ( name \t md5 ) to compare against', default=0)
 args = parser.parse_args()
 
 def get_value(my_key, my_dictionary):
@@ -37,7 +37,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, compare_md5, md5
     if wget_status == 0:
         print ("calculating dl md5 " + fileName)   #### get md5 for file downloaded from ftp
         dlFileMd5 = generate_file_md5(fileName)    # uses function generate_file_md5 -- in your scripts
-        if compare_md5 != 0:                       ### Option to check against reference md5
+        if md5_ref_dictionary != 0:                       ### Option to check against reference md5
             ref_md5 = get_value(my_key=fileName, my_dictionary=md5_ref_dictionary)
             if dlFileMd5 == ref_md5:
                 dl_md5_check = "md5_PASS"
@@ -66,7 +66,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, compare_md5, md5
             LOGFILE.write(log_string)
             LOGFILE.flush()
         s3FileMd5=bucket.get_key(key).etag[1 :-1]  ### Get the md5 for the file on s3
-        if compare_md5 != 0:                       ### Option to check against reference md5
+        if md5_ref_dictionary != 0:                       ### Option to check against reference md5
             ref_md5 = get_value(my_key=fileName, my_dictionary=md5_ref_dictionary)
             if dlFileMd5 == ref_md5:
                 ul_md5_check = "md5_PASS"
@@ -98,9 +98,9 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, compare_md5, md5
 ### MAIN ###
 
 # read in compare list if option is specified
-if args.compare_md5 != 0:
+if args.md5_ref_dictionary != 0:
     md5_ref_dictionary = {}
-    with open(args.compare_md5) as f:
+    with open(args.md5_ref_dictionary) as f:
         for line in f:
             (key, val) = line.split('\t')
             md5_ref_dictionary[key] = val
