@@ -29,7 +29,7 @@ def get_value(my_key, my_dictionary):
     else:        
         return ("key does not exist")
 
-def ftp_dl(line, fileName, access_key, secret_key, bucket_name, compare_md5, md5_ref_dictionary):
+def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictionary):
     line = line.rstrip("\n")
     tic = time.time()
     wget_status=subprocess.call(["wget", line])
