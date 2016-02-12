@@ -18,7 +18,7 @@ parser.add_argument('-s','--secret_key', help='secret key', required=True)
 parser.add_argument('-b','--bucket_name', help='bucket name', default="1000_genome_exome")
 parser.add_argument('-c','--credentials', help='credentials file for multipart upload: access_key, secret_key', required=True)
 parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
-parser.add_argument('-k', '--compare_md5', help='provide a list ( name \t md5 ) to compare against', default=0)
+parser.add_argument('-k', '--md5_ref_dictionary', help='provide a list ( name \t md5 ) to compare against', default=0)
 args = parser.parse_args()
 
 def get_value(my_key, my_dictionary):
@@ -119,4 +119,4 @@ with open(args.list) as f:
         fileName = fileName.rstrip("\n")
         print ("Processing sample ( " + str(sample) + " ) :: " + fileName)
         while ftp_status < args.retry:
-            ftp_status=ftp_dl(line=line, fileName=fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, compare_md5=args.compare_md5, md5_ref_dictionary=args.md5_ref_dictionary)        
+            ftp_status=ftp_dl(line=line, fileName=fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, compare_md5=args.md5_ref_dictionary)        
