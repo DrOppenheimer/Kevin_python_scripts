@@ -122,11 +122,11 @@ LOGFILE.flush()
 sample=0
 ftp_status=0
 with open(args.list) as f:
-    for line in f:
+    for my_line in f:
         sample += 1
-        splitLine = line.split("/")
-        fileName = splitLine[ len(splitLine) - 1 ]
-        fileName = fileName.rstrip("\n")
-        print ("Processing sample ( " + str(sample) + " ) :: " + fileName)
+        splitLine = my_line.split("/")
+        my_fileName = splitLine[ len(splitLine) - 1 ]
+        my_fileName = my_fileName.rstrip("\n")
+        print ("Processing sample ( " + str(sample) + " ) :: " + my_fileName)
         while ftp_status < args.retry:
-            ftp_status=ftp_dl(line=line, fileName=fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, md5_ref_dictionary=my_md5_ref_dictionary)        
+            ftp_status=ftp_dl(line=my_line, fileName=my_fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, md5_ref_dictionary=my_md5_ref_dictionary)        
