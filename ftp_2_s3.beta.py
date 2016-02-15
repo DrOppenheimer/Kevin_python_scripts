@@ -19,6 +19,7 @@ parser.add_argument('-b','--bucket_name', help='bucket name', default="1000_geno
 parser.add_argument('-c','--credentials', help='credentials file for multipart upload: access_key, secret_key', required=True)
 parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
 parser.add_argument('-k', '--md5_ref_dictionary', help='provide a list ( name \t md5 ) to compare against', default=0)
+parser.add_argument('-d', '--debug', action="store_true", help='run in debug mode')
 args = parser.parse_args()
 
 def get_value(my_key, my_dictionary):
@@ -29,7 +30,9 @@ def get_value(my_key, my_dictionary):
     else:        
         return ("key does not exist")
 
-def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictionary):
+def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictionary, debug):
+    if debug==True:
+        print "FILE_NAME: " + fileName
     line = line.rstrip("\n")
     tic = time.time()
     wget_status=subprocess.call(["wget", line])
@@ -87,16 +90,17 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
     else:
         remove_status=subprocess.call(["rm", fileName])
         if remove_status != 0:
-            log_string = fileName + '\t' + "rm of failed download failed" + '\n'
+            log_string = fileName + '\t' + " :: download and/or rm failed" + '\n'
             LOGFILE.write(log_string)
             LOGFILE.flush()
-            log_string = fileName + '\t' + "wget failed" + '\n'
-            LOGFILE.write(log_string)
-            LOGFILE.flush()
+            #log_string = fileName + '\t' + "wget failed" + '\n'
+            #LOGFILE.write(log_string)
+            #LOGFILE.flush()
             return wget_status
 
 ### MAIN ###
 
+#read in compare list if option is specified
 # read in compare list if option is specified
 #     my_md5_ref_dictionary = {}
 #     for line in open(args.md5_ref_dictionary):
@@ -120,7 +124,7 @@ LOGFILE = open('./' + args.list + '.ul_log.txt', 'w+')
 LOGFILE.write('file_name' + '\t' + 'ref_md5' +'\t' + 'local_size(bytes)' + '\t' + 'local_md5' + '\t' + 'local_md5_check' + '\t' + 'dl_time(s)' + '\t' + 's3_size(bytes)' + '\t' + 's3_md5' + '\t' + 's3_md5_check' + '\t' + 'ul_time(s)' + '\n')
 LOGFILE.flush()
 sample=0
-ftp_status=0
+
 with open(args.list) as f:
     for my_line in f:
         sample += 1
@@ -128,5 +132,17 @@ with open(args.list) as f:
         my_fileName = splitLine[ len(splitLine) - 1 ]
         my_fileName = my_fileName.rstrip("\n")
         print ("Processing sample ( " + str(sample) + " ) :: " + my_fileName)
-        while ftp_status < args.retry:
-            ftp_status=ftp_dl(line=my_line, fileName=my_fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, md5_ref_dictionary=my_md5_ref_dictionary)        
+        ftp_status=1
+        my_attempt=0
+        while my_attempt <= args.retry:
+            my_attempt += 1
+            time.sleep(1)
+            if ftp_status != 0:
+                print("STARTING download attempt ( " + str(my_attempt) + " ) for " + my_fileName)
+                ftp_status=ftp_dl(line=my_line, fileName=my_fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, md5_ref_dictionary=my_md5_ref_dictionary, debug=args.debug)
+                if my_attempt == args.retry:
+                    if ftp_status != 0:
+                        print("final download attempt ( " + str(my_attempt) + " ) FAILED")
+            else:
+                print(my_fileName + " FINISHED on attempt ( " + str(my_attempt) + " )")
+
