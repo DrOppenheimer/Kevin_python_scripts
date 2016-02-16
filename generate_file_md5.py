@@ -6,24 +6,24 @@
 
 import hashlib
 
-def generate_file_md5(filename):
-    md5 = hashlib.md5()
-    with open(filename,'rb') as f: 
-        for chunk in iter(lambda: f.read(8192), b''): 
-            md5.update(chunk)
-    return md5.hexdigest()
+# def generate_file_md5(filename):
+#     md5 = hashlib.md5()
+#     with open(filename,'rb') as f: 
+#         for chunk in iter(lambda: f.read(8192), b''): 
+#             md5.update(chunk)
+#     return md5.hexdigest()
 
-# #def generate_file_md5(rootdir, filename, blocksize=2**20):
-# def generate_file_md5(filename, blocksize=2**20):
-#     m = hashlib.md5()
-#     #with open( os.path.join(rootdir, filename) , "rb" ) as f:
-#     with open( filename , "rb" ) as f:
-#         while True:
-#             buf = f.read(blocksize)
-#             if not buf:
-#                 break
-#             m.update( buf )
-#             return m.hexdigest()
+#def generate_file_md5(rootdir, filename, blocksize=2**20):
+def generate_file_md5(filename, blocksize=2**20):
+    m = hashlib.md5()
+    #with open( os.path.join(rootdir, filename) , "rb" ) as f:
+    with open( filename , "rb" ) as f:
+        while True:
+            buf = f.read(blocksize)
+            if not buf:
+                break
+            m.update( buf )
+    return m.hexdigest()
 
 
 # def generate_file_md5(file):
