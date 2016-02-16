@@ -40,8 +40,12 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
     if wget_status == 0:
         print ("calculating dl md5 " + fileName)   #### get md5 for file downloaded from ftp
         dlFileMd5 = generate_file_md5(fileName)    # uses function generate_file_md5 -- in your scripts
+        if debug == True:
+                print( fileName + " :: FTP_MD5 :: " dlFileMd5  )
         if md5_ref_dictionary != 0:                       ### Option to check against reference md5
             ref_md5 = get_value(my_key=fileName, my_dictionary=md5_ref_dictionary)
+            if debug == True:
+                print( fileName + " :: REF_MD5 :: " ref_md5  )
             if dlFileMd5 == ref_md5:
                 dl_md5_check = "md5_PASS"
             else:
@@ -69,6 +73,8 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             LOGFILE.write(log_string)
             LOGFILE.flush()
         s3FileMd5=bucket.get_key(key).etag[1 :-1]  ### Get the md5 for the file on s3
+        if debug == True:
+                print( fileName + " :: s3_MD5 :: " s3FileMd5  )
         if md5_ref_dictionary != 0:                       ### Option to check against reference md5
             ref_md5 = get_value(my_key=fileName, my_dictionary=md5_ref_dictionary)
             if dlFileMd5 == ref_md5:
@@ -138,11 +144,11 @@ with open(args.list) as f:
             my_attempt += 1
             time.sleep(1)
             if ftp_status != 0:
-                print("STARTING download attempt ( " + str(my_attempt) + " ) for " + my_fileName)
+                print("STARTING download and upload attempt ( " + str(my_attempt) + " ) for " + my_fileName)
                 ftp_status=ftp_dl(line=my_line, fileName=my_fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, md5_ref_dictionary=my_md5_ref_dictionary, debug=args.debug)
                 if my_attempt == args.retry:
                     if ftp_status != 0:
                         print("final download attempt ( " + str(my_attempt) + " ) FAILED")
             else:
-                print(my_fileName + " FINISHED on attempt ( " + str(my_attempt) + " )")
+                print(my_fileName + "download and upload FINISHED on attempt ( " + str(my_attempt) + " )")
 
