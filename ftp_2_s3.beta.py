@@ -19,6 +19,7 @@ parser.add_argument('-b','--bucket_name', help='bucket name', default="1000_geno
 parser.add_argument('-c','--credentials', help='credentials file for multipart upload: access_key, secret_key', required=True)
 parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
 parser.add_argument('-k', '--md5_ref_dictionary', help='provide a list ( name \t md5 ) to compare against', default=0)
+parser.add_argument('-p', '--proxy', action="store_true", help='run using \"with_proxy\"')
 parser.add_argument('-d', '--debug', action="store_true", help='run in debug mode')
 args = parser.parse_args()
 
@@ -30,12 +31,15 @@ def get_value(my_key, my_dictionary):
     else:        
         return ("key does not exist")
 
-def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictionary, debug):
+def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictionary, proxy, debug):
     if debug==True:
         print "FILE_NAME: " + fileName
     line = line.rstrip("\n")
     tic = time.time()
-    wget_status=subprocess.call(["wget", line])
+    if proxy==True:
+        wget_status=subprocess.call(["with_proxy wget", line])
+    else:
+        wget_status=subprocess.call(["wget", line])
     if debug==True:
         print ("WGET_STATUS: " + str(wget_status))
     dlTime = time.time() - tic
@@ -154,7 +158,7 @@ with open(args.list) as f:
                     print("Attempt " + str(my_attempt))
                 time.sleep(1)
                 print("STARTING download and upload attempt ( " + str(my_attempt) + " ) for " + my_fileName)
-                ftp_status=ftp_dl(line=my_line, fileName=my_fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, md5_ref_dictionary=my_md5_ref_dictionary, debug=args.debug)
+                ftp_status=ftp_dl(line=my_line, fileName=my_fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, md5_ref_dictionary=my_md5_ref_dictionary, proxy=args.proxy, debug=args.debug)
                 if ftp_status == 0:
                     print(my_fileName + " download and upload FINISHED on attempt ( " + str(my_attempt) + " )")
                 if args.debug==True:
