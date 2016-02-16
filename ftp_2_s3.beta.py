@@ -55,6 +55,8 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             dl_md5_check = "NA"
         statinfo = os.stat(fileName)               #### get size of file downloaded from ftp
         dlSize = statinfo.st_size                  #size_gb = float(size) / (2**30)
+        if debug==True:
+            print(fileName + " :: dl_size :: " + dlSize)
         print ("uploading " + fileName)            #### upload to s3
         tic = time.time()
         con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key )
@@ -84,7 +86,9 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
         else:
             ref_md5 = "NA"
             ul_md5_check = "NA"
-        s3Size=bucket.lookup(fileName).size                            ### Get the size for the file on s3
+        s3Size=bucket.lookup(fileName).size        ### Get the size for the file on s3
+        if debug==True:
+            print(fileName + " :: s3_size :: " + s3Size)
         print ("printing to log " + fileName)      #### print to log
         if dlSize > 4*(2**30):
             log_string = fileName + '\t' + ref_md5 + '\t' + str(dlSize) + '\t' + str(dlFileMd5) + '\t' + dl_md5_check + '\t' + str(dlTime) + '\t' + str(s3Size) + '\t' + str(s3FileMd5) + '\t' + ul_md5_check + '\t' + str(ulTime) + '\t' + "File > 4Gb (4*(2^30) bytes), used multipart upload - upload md5 WILL NOT match dl md5" '\n'
