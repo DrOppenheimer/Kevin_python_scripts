@@ -37,7 +37,9 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
     line = line.rstrip("\n")
     tic = time.time()
     if proxy==True:
-        proxy_command = "with_proxy wget " + line
+        proxy_command = ("with_proxy wget " + line)
+        if debug==True:
+            print( "proxy_command :" + proxy_command )
         wget_status=os.system(proxy_command)
         #wget_status=subprocess.call(["with_proxy wget", line])
     else:
