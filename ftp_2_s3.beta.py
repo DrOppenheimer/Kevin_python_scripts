@@ -41,7 +41,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
         print ("calculating dl md5 " + fileName)   #### get md5 for file downloaded from ftp
         dlFileMd5 = generate_file_md5(fileName)    # uses function generate_file_md5 -- in your scripts
         if debug == True:
-                print( fileName + " :: FTP_MD5 :: " dlFileMd5  )
+                print( fileName + " :: FTP_MD5 :: " + dlFileMd5  )
         if md5_ref_dictionary != 0:                       ### Option to check against reference md5
             ref_md5 = get_value(my_key=fileName, my_dictionary=md5_ref_dictionary)
             if debug == True:
@@ -76,7 +76,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             LOGFILE.flush()
         s3FileMd5=bucket.get_key(key).etag[1 :-1]  ### Get the md5 for the file on s3
         if debug == True:
-                print( fileName + " :: s3_MD5 :: " s3FileMd5  )
+                print( fileName + " :: s3_MD5 :: " + s3FileMd5  )
         if md5_ref_dictionary != 0:                       ### Option to check against reference md5
             ref_md5 = get_value(my_key=fileName, my_dictionary=md5_ref_dictionary)
             if dlFileMd5 == ref_md5:
