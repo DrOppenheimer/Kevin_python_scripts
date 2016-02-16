@@ -99,6 +99,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
         print ("Done processing sample ( " + str(sample) + " ) :: " + fileName)
         LOGFILE.write(log_string)
         LOGFILE.flush()
+        return wget_status
     else:
         remove_status=subprocess.call(["rm", fileName])
         if remove_status != 0:
