@@ -45,7 +45,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
         if md5_ref_dictionary != 0:                       ### Option to check against reference md5
             ref_md5 = get_value(my_key=fileName, my_dictionary=md5_ref_dictionary)
             if debug == True:
-                print( fileName + " :: REF_MD5 :: " ref_md5  )
+                print( fileName + " :: REF_MD5 :: " + ref_md5  )
             if dlFileMd5 == ref_md5:
                 dl_md5_check = "md5_PASS"
             else:
