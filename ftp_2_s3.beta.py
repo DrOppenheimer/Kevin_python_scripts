@@ -45,7 +45,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
         if md5_ref_dictionary != 0:                       ### Option to check against reference md5
             ref_md5 = get_value(my_key=fileName, my_dictionary=md5_ref_dictionary)
             if debug == True:
-                print( fileName + " :: REF_MD5 :: " + ref_md5  )
+                print( fileName + " :: REF_MD5 :: " + str(ref_md5)  )
             if dlFileMd5 == ref_md5:
                 dl_md5_check = "md5_PASS"
             else:
@@ -56,7 +56,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
         statinfo = os.stat(fileName)               #### get size of file downloaded from ftp
         dlSize = statinfo.st_size                  #size_gb = float(size) / (2**30)
         if debug==True:
-            print(fileName + " :: dl_size :: " + dlSize)
+            print(fileName + " :: dl_size :: " + str(dlSize))
         print ("uploading " + fileName)            #### upload to s3
         tic = time.time()
         con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key )
@@ -76,7 +76,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             LOGFILE.flush()
         s3FileMd5=bucket.get_key(key).etag[1 :-1]  ### Get the md5 for the file on s3
         if debug == True:
-                print( fileName + " :: s3_MD5 :: " + s3FileMd5  )
+                print( fileName + " :: s3_MD5 :: " + str(s3FileMd5)  )
         if md5_ref_dictionary != 0:                       ### Option to check against reference md5
             ref_md5 = get_value(my_key=fileName, my_dictionary=md5_ref_dictionary)
             if dlFileMd5 == ref_md5:
@@ -88,7 +88,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             ul_md5_check = "NA"
         s3Size=bucket.lookup(fileName).size        ### Get the size for the file on s3
         if debug==True:
-            print(fileName + " :: s3_size :: " + s3Size)
+            print(fileName + " :: s3_size :: " + str(s3Size))
         print ("printing to log " + fileName)      #### print to log
         if dlSize > 4*(2**30):
             log_string = fileName + '\t' + ref_md5 + '\t' + str(dlSize) + '\t' + str(dlFileMd5) + '\t' + dl_md5_check + '\t' + str(dlTime) + '\t' + str(s3Size) + '\t' + str(s3FileMd5) + '\t' + ul_md5_check + '\t' + str(ulTime) + '\t' + "File > 4Gb (4*(2^30) bytes), used multipart upload - upload md5 WILL NOT match dl md5" '\n'
