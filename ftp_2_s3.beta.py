@@ -156,7 +156,7 @@ with open(args.list) as f:
                 print("STARTING download and upload attempt ( " + str(my_attempt) + " ) for " + my_fileName)
                 ftp_status=ftp_dl(line=my_line, fileName=my_fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, md5_ref_dictionary=my_md5_ref_dictionary, debug=args.debug)
                 if ftp_status == 0:
-                    print(my_fileName + "download and upload FINISHED on attempt ( " + str(my_attempt) + " )")
+                    print(my_fileName + " download and upload FINISHED on attempt ( " + str(my_attempt) + " )")
                 if args.debug==True:
                     print( "FTP_STATUS: " + str(ftp_status) )
                 if my_attempt == args.retry:
