@@ -83,7 +83,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
         ulTime = time.time() - tic
         print ("delete local copy of " + fileName) ### remove local copy of file
         #remove_status=subprocess.call(["rm", fileName])
-        delete_command = "sudo -f rm " + fileName
+        delete_command = "sudo rm -f " + fileName
         remove_status=os.system(delete_command)
         if remove_status != 0:
             log_string = fileName + '\t' + "rm failed" + '\n'
