@@ -40,7 +40,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
     tic = time.time()
     if proxy==True:
         #proxy_command = ("with_proxy wget " + line)
-        proxy_command = ("sudo -E wget " + line)
+        proxy_command = ("source ~/.bashrc; sudo -E wget " + line)
         if debug==True:
             print( "proxy_command :" + proxy_command )
         wget_status=os.system(proxy_command)
