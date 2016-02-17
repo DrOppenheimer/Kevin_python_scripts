@@ -23,6 +23,8 @@ parser.add_argument('-p', '--proxy', action="store_true", help='run using \"with
 parser.add_argument('-d', '--debug', action="store_true", help='run in debug mode')
 args = parser.parse_args()
 
+my_proxy=""
+
 def get_value(my_key, my_dictionary):
     if my_dictionary.has_key(my_key):
         my_value = my_dictionary.get(my_key)
@@ -37,7 +39,8 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
     line = line.rstrip("\n")
     tic = time.time()
     if proxy==True:
-        proxy_command = ("with_proxy wget " + line)
+        #proxy_command = ("with_proxy wget " + line)
+        proxy_command = ("sudo -E wget " + line)
         if debug==True:
             print( "proxy_command :" + proxy_command )
         wget_status=os.system(proxy_command)
