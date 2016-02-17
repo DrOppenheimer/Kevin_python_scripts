@@ -40,7 +40,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
     tic = time.time()
     if proxy==True:
         #proxy_command = ("with_proxy wget " + line)
-        proxy_command = (". ~/.bashrc; sudo -E wget " + line)
+        proxy_command = ("HTTP_PROXY=http://cloud-proxy:3128; export HTTP_PROXY; HTTPS_PROXY=http://cloud-proxy:3128; export HTTPS_PROXY; http_proxy=http://cloud-proxy:3128; export http_proxy; https_proxy=http://cloud-proxy:3128; export https_proxy; ftp_proxy=http://cloud-proxy:3128; export ftp_proxy; ~/.bashrc; sudo -E wget " + line)
         if debug==True:
             print( "proxy_command :" + proxy_command )
         wget_status=os.system(proxy_command)
