@@ -82,7 +82,9 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             key.set_contents_from_filename(fileName) # maybe do check and multipart for anything over a certain size
         ulTime = time.time() - tic
         print ("delete local copy of " + fileName) ### remove local copy of file
-        remove_status=subprocess.call(["rm", fileName])
+        #remove_status=subprocess.call(["rm", fileName])
+        delete_command = "sudo -f rm " + fileName
+        remove_status=os.system(delete_command)
         if remove_status != 0:
             log_string = fileName + '\t' + "rm failed" + '\n'
             LOGFILE.write(log_string)
