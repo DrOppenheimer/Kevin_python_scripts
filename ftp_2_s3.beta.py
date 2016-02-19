@@ -15,6 +15,8 @@ parser = argparse.ArgumentParser(description='Simple script to perform a boto do
 parser.add_argument('-l','--list', help='file with list of ftp addresses', required=True, default="test")
 parser.add_argument('-a','--access_key', help='access key', required=True)
 parser.add_argument('-s','--secret_key', help='secret key', required=True)
+parser.add_argument('-h','--host', help='s3_host', default='griffin-objstore.opensciencedatacloud.org')
+parser.add_argument('-f','--caling_format', help='calling format', default='boto.s3.connection.OrdinaryCallingFormat()')
 parser.add_argument('-b','--bucket_name', help='bucket name', default="1000_genome_exome")
 parser.add_argument('-c','--credentials', help='credentials file for multipart upload: access_key, secret_key', required=True)
 parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
@@ -72,7 +74,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             print(fileName + " :: dl_size :: " + str(dlSize))
         print ("uploading " + fileName)            #### upload to s3
         tic = time.time()
-        con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key )
+        con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, host=args.host, calling_format=args.calling_format)
         bucket=con.get_bucket(args.bucket_name)
         key=Key(name=fileName, bucket=bucket)
         if dlSize > 4*(2**30): # use multipart upload for anything larger than 4Gb 
