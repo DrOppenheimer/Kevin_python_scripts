@@ -35,7 +35,7 @@ def get_value(my_key, my_dictionary):
     else:        
         return ("key does not exist")
 
-def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictionary, proxy, debug):
+def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictionary, proxy, gateway, debug):
     if debug==True:
         print "FILE_NAME: " + fileName
     line = line.rstrip("\n")
@@ -74,7 +74,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             print(fileName + " :: dl_size :: " + str(dlSize))
         print ("uploading " + fileName)            #### upload to s3
         tic = time.time()
-        con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, host=args.gateway, calling_format=boto.s3.connection.OrdinaryCallingFormat())
+        con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, host=gateway, calling_format=boto.s3.connection.OrdinaryCallingFormat())
         bucket=con.get_bucket(args.bucket_name)
         key=Key(name=fileName, bucket=bucket)
         if dlSize > 4*(2**30): # use multipart upload for anything larger than 4Gb 
@@ -169,7 +169,7 @@ with open(args.list) as f:
                     print("Attempt " + str(my_attempt))
                 time.sleep(1)
                 print("STARTING download and upload attempt ( " + str(my_attempt) + " ) for " + my_fileName)
-                ftp_status=ftp_dl(line=my_line, fileName=my_fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, md5_ref_dictionary=my_md5_ref_dictionary, proxy=args.proxy, debug=args.debug)
+                ftp_status=ftp_dl(line=my_line, fileName=my_fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, md5_ref_dictionary=my_md5_ref_dictionary, gateway=args.gateway, proxy=args.proxy, debug=args.debug)
                 if ftp_status == 0:
                     print(my_fileName + " download and upload FINISHED on attempt ( " + str(my_attempt) + " )")
                 if args.debug==True:
