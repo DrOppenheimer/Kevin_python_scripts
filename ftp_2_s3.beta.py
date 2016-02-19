@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser(description='Simple script to perform a boto do
 parser.add_argument('-l','--list', help='file with list of ftp addresses', required=True, default="test")
 parser.add_argument('-a','--access_key', help='access key', required=True)
 parser.add_argument('-s','--secret_key', help='secret key', required=True)
-parser.add_argument('-h','--host', help='s3_host', default='griffin-objstore.opensciencedatacloud.org')
+parser.add_argument('-h','--host', help='s3 host', default='griffin-objstore.opensciencedatacloud.org')
 parser.add_argument('-f','--caling_format', help='calling format', default='boto.s3.connection.OrdinaryCallingFormat()')
 parser.add_argument('-b','--bucket_name', help='bucket name', default="1000_genome_exome")
 parser.add_argument('-c','--credentials', help='credentials file for multipart upload: access_key, secret_key', required=True)
