@@ -15,6 +15,8 @@ parser = argparse.ArgumentParser(description='Simple script to perform a boto do
 parser.add_argument('-l','--list', help='file with list of ftp addresses', required=True, default="test")
 parser.add_argument('-a','--access_key', help='access key', required=True)
 parser.add_argument('-s','--secret_key', help='secret key', required=True)
+parser.add_argument('-g','--gateway', help='s3 host/gateway', default='griffin-objstore.opensciencedatacloud.org')
+parser.add_argument('-f','--caling_format', help='calling format', default='boto.s3.connection.OrdinaryCallingFormat()')
 parser.add_argument('-b','--bucket_name', help='bucket name', default="1000_genome_exome")
 parser.add_argument('-c','--credentials', help='credentials file for multipart upload: access_key, secret_key', required=True)
 parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
@@ -22,6 +24,8 @@ parser.add_argument('-k', '--md5_ref_dictionary', help='provide a list ( name \t
 parser.add_argument('-p', '--proxy', action="store_true", help='run using \"with_proxy\"')
 parser.add_argument('-d', '--debug', action="store_true", help='run in debug mode')
 args = parser.parse_args()
+
+my_proxy=""
 
 def get_value(my_key, my_dictionary):
     if my_dictionary.has_key(my_key):
@@ -37,7 +41,8 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
     line = line.rstrip("\n")
     tic = time.time()
     if proxy==True:
-        proxy_command = ("with_proxy wget " + line)
+        #proxy_command = ("with_proxy wget " + line)
+        proxy_command = ("HTTP_PROXY=http://cloud-proxy:3128; export HTTP_PROXY; HTTPS_PROXY=http://cloud-proxy:3128; export HTTPS_PROXY; http_proxy=http://cloud-proxy:3128; export http_proxy; https_proxy=http://cloud-proxy:3128; export https_proxy; ftp_proxy=http://cloud-proxy:3128; export ftp_proxy; ~/.bashrc; sudo -E wget " + line)
         if debug==True:
             print( "proxy_command :" + proxy_command )
         wget_status=os.system(proxy_command)
@@ -69,7 +74,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             print(fileName + " :: dl_size :: " + str(dlSize))
         print ("uploading " + fileName)            #### upload to s3
         tic = time.time()
-        con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key )
+        con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, host=args.gateway, calling_format=args.calling_format)
         bucket=con.get_bucket(args.bucket_name)
         key=Key(name=fileName, bucket=bucket)
         if dlSize > 4*(2**30): # use multipart upload for anything larger than 4Gb 
@@ -79,7 +84,9 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             key.set_contents_from_filename(fileName) # maybe do check and multipart for anything over a certain size
         ulTime = time.time() - tic
         print ("delete local copy of " + fileName) ### remove local copy of file
-        remove_status=subprocess.call(["rm", fileName])
+        #remove_status=subprocess.call(["rm", fileName])
+        delete_command = "sudo rm -f " + fileName
+        remove_status=os.system(delete_command)
         if remove_status != 0:
             log_string = fileName + '\t' + "rm failed" + '\n'
             LOGFILE.write(log_string)
