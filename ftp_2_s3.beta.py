@@ -76,7 +76,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
         tic = time.time()
         #con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, host=gateway, calling_format=boto.s3.connection.OrdinaryCallingFormat()) # worked on Sullivan
         con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, host=gateway) # for Griffin
-        bucket=con.get_bucket(args.bucket_name)
+        bucket=con.get_bucket(bucket_name)
         key=Key(name=fileName, bucket=bucket)
         if dlSize > 4*(2**30): # use multipart upload for anything larger than 4Gb 
             upload_string = "multipart_upload.py" + " creds " + args.bucket_name + " " + fileName + " < " + fileName 
