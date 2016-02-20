@@ -74,7 +74,8 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             print(fileName + " :: dl_size :: " + str(dlSize))
         print ("uploading " + fileName)            #### upload to s3
         tic = time.time()
-        con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, host=gateway, calling_format=boto.s3.connection.OrdinaryCallingFormat())
+        #con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, host=gateway, calling_format=boto.s3.connection.OrdinaryCallingFormat()) # worked on Sullivan
+        con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, host=gateway) # for Griffin
         bucket=con.get_bucket(args.bucket_name)
         key=Key(name=fileName, bucket=bucket)
         if dlSize > 4*(2**30): # use multipart upload for anything larger than 4Gb 
@@ -91,7 +92,8 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             log_string = fileName + '\t' + "rm failed" + '\n'
             LOGFILE.write(log_string)
             LOGFILE.flush()
-        s3FileMd5=bucket.get_key(key).etag[1 :-1]  ### Get the md5 for the file on s3
+        #s3FileMd5=bucket.get_key(key).etag[1 :-1]  ### Get the md5 for the file on s3
+        s3FileMd5="fix later"
         if debug == True:
                 print( fileName + " :: s3_MD5 :: " + str(s3FileMd5)  )
         if md5_ref_dictionary != 0:                       ### Option to check against reference md5
