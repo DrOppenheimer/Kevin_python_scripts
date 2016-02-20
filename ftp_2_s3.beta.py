@@ -92,7 +92,8 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             log_string = fileName + '\t' + "rm failed" + '\n'
             LOGFILE.write(log_string)
             LOGFILE.flush()
-        s3FileMd5=bucket.get_key(key).etag[1 :-1]  ### Get the md5 for the file on s3
+        #s3FileMd5=bucket.get_key(key).etag[1 :-1]  ### Get the md5 for the file on s3
+        s3FileMd5="fix later"
         if debug == True:
                 print( fileName + " :: s3_MD5 :: " + str(s3FileMd5)  )
         if md5_ref_dictionary != 0:                       ### Option to check against reference md5
