@@ -78,13 +78,17 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
         con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, host=gateway) # for Griffin
         if debug == True:
             print( "SUB :: Bucket_name: " + bucket_name )
-        bucket=con.get_bucket(bucket_name)
-        key=Key(name=fileName, bucket=bucket)
         if dlSize > 4*(2**30): # use multipart upload for anything larger than 4Gb 
             upload_string = "multipart_upload.py" + " creds " + args.bucket_name + " " + fileName + " < " + fileName 
             os.system(upload_string)
         else:
-            key.set_contents_from_filename(fileName) # maybe do check and multipart for anything over a certain size
+            #key=Key(name=fileName, bucket=bucket)
+            #key=bucket.get_key(bucket_name)
+            #key.set_contents_from_filename(fileName)
+            #bucket.set_contents_from_filename(fileName)
+            bucket=con.get_bucket(bucket_name)
+            key=bucket.new_key(fileName)
+            key.set_contents_from_filename(fileName)
         ulTime = time.time() - tic
         print ("delete local copy of " + fileName) ### remove local copy of file
         #remove_status=subprocess.call(["rm", fileName])
