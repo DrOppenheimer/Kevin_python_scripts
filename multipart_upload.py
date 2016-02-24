@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
     #credentials= json.load(args.credentials)
 
-    if debug==True:
+    if args.debug==True:
         print("access_key :: " + args.access_key)
         print("secret_key :: " + args.secret_key)
         print("gateway    :: " + args.gateway)
