@@ -25,10 +25,10 @@ if __name__ == '__main__':
     
     #parser = argparse.ArgumentParser(description='Multipart from stdin.')
 
-    parser.add_argument('-d', '--debug',
-        action='store_true',
-        help='Enabled debug-level logging.',
-    )
+    #parser.add_argument('-d', '--debug',
+    #    action='store_true',
+    #    help='Enabled debug-level logging.',
+    #)
 
     #parser.add_argument('credentials',
     #    type=argparse.FileType('r'),
