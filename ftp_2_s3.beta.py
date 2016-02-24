@@ -46,7 +46,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
     if debug==True:
         print("Length line :: " + str(len(line))  )
     if len(line) == 0:
-        sys.exit()
+        sys.exit("This line of the list is empty, terminating script")
     tic = time.time()
     if proxy==True:
         #proxy_command = ("with_proxy wget " + line)
