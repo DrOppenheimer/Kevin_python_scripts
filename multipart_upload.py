@@ -20,7 +20,7 @@ if __name__ == '__main__':
     parser.add_argument('-g','--gateway', help='s3 gateway/host', required=True)
     parser.add_argument('-b','--bucket_name', help='bucket name', required=True)
     parser.add_argument('-k','--bucket_key', help='bucket key', required=True)
-    parser.add_argument('-d','--debug', help='debug')
+    parser.add_argument('-d','--debug', action="store_true", help='debug')
     args = parser.parse_args()
     
     #parser = argparse.ArgumentParser(description='Multipart from stdin.')
