@@ -43,7 +43,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
         print "SUB :: FILE_NAME: " + fileName
     line = line.rstrip("\n")
     if debug==True:
-        print("Length line :: " + len(line)  )
+        print("Length line :: " + str(len(line))  )
     if len(line) == 0:
         sys.exit()
     tic = time.time()
