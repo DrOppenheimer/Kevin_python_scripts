@@ -18,6 +18,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Multipart from stdin. - modified from Mark\'s version')
     parser.add_argument('-a','--access_key', help='access key', required=True)
     parser.add_argument('-s','--secret_key', help='secret key', required=True)
+    parser.add_argument('-h','--host', help='s3 host', required=True)
     parser.add_argument('-b','--bucket_name', help='bucket name', required=True)
     parser.add_argument('-k','--bucket_key', help='bucket key', required=True)
     #parser.add_argument('-d','--debug', help='debug')
@@ -50,10 +51,10 @@ if __name__ == '__main__':
     conn = boto.connect_s3(
         aws_access_key_id     = args.access_key, #credentials.get('access_key'),
         aws_secret_access_key = args.secret_key, #credentials.get('secret_key'),
-        #host                  = credentials.get('host'),
+        host                  = args.host, #credentials.get('host'),
         #port                  = credentials.get('port'),
-        #is_secure             = credentials.get('is_secure', True),
-        #calling_format        = boto.s3.connection.OrdinaryCallingFormat(),
+        is_secure             = True, #credentials.get('is_secure', True),
+        calling_format        = boto.s3.connection.OrdinaryCallingFormat(),
     )
 
     mp = conn.get_bucket(args.bucket_name).initiate_multipart_upload(args.bucket_key)
@@ -70,13 +71,13 @@ if __name__ == '__main__':
             break
         
         ramdisk.seek(0)
-        logging.info('Uploading chunk {}'.format(i))
+        #logging.info('Uploading chunk {}'.format(i))
         
         try: mp.upload_part_from_file(ramdisk, part_num=i, size=size)
         except Exception as err:
-            logging.error('Failed writing part - cancelling multipart.')
+            #logging.error('Failed writing part - cancelling multipart.')
             mp.cancel_upload()
             raise
 
-    logging.info('Completing multipart.')
+    #logging.info('Completing multipart.')
     mp.complete_upload()
