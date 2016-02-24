@@ -12,6 +12,9 @@
 # 
 
 import sys
+#import json
+import mmap
+#import logging
 import argparse
 import os
 import time
@@ -94,8 +97,35 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
         if debug == True:
             print( "SUB :: Bucket_name: " + bucket_name )
         if dlSize > 4*(2**30): # use multipart upload for anything larger than 4Gb 
-            upload_string = "multipart_upload.py" + " -a " + args.access_key + " -s " + args.secret_key + " -b " args.bucket_name + " -k " + fileName + " < " + fileName 
-            os.system(upload_string)
+            #upload_string = "multipart_upload.py" + " -a " + args.access_key + " -s " + args.secret_key + " -b " args.bucket_name + " -k " + fileName + " < " + fileName 
+            #os.system(upload_string)
+            GIG = 2**30
+    
+            mp = con.get_bucket(bucket_name).initiate_multipart_upload(fileName)
+
+            i = 0
+            while True:
+                i += 1
+        
+                ramdisk = mmap.mmap(-1, GIG)
+                ramdisk.write(sys.stdin.read(GIG))
+        
+                size = ramdisk.tell()
+                if not size:
+                    break
+        
+                ramdisk.seek(0)
+                #logging.ingo('Uploading chunk {}'.format(i))
+        
+                try: mp.upload_part_from_file(ramdisk, part_num=i, size=size)
+                except Exception as err:
+                    #logging.error('Failed writing part - cancelling multipart.')
+                    mp.cancel_upload()
+                    raise
+
+            #logging.info('Completing multipart.')
+            mp.complete_upload()
+
         else:
             bucket=con.get_bucket(bucket_name)
             key=bucket.new_key(fileName)
