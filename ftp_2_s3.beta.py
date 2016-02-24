@@ -74,7 +74,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
         print ("SUB :: calculating dl md5 " + fileName)   #### get md5 for file downloaded from ftp
         dlFileMd5 = generate_file_md5(fileName)    # uses function generate_file_md5 -- in your scripts
         if debug == True:
-                print( fileName + " :: FTP_MD5 :: " + dlFileMd5  )
+                print( "SUB :: " + fileName + " :: FTP_MD5 :: " + dlFileMd5  )
         if md5_ref_dictionary != 0:                       ### Option to check against reference md5
             ref_md5 = get_value(my_key=fileName, my_dictionary=md5_ref_dictionary)
             if debug == True:
@@ -106,7 +106,9 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             i = 0
             while True:
                 i += 1
-        
+
+                if debug==True:
+                    print("SUB :: multipart upload part ( " + i + " ) for " + fileName)                
                 ramdisk = mmap.mmap(-1, GIG)
                 ramdisk.write(sys.stdin.read(GIG))
         
@@ -127,6 +129,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             mp.complete_upload()
 
         else:
+            print("SUB :: single part upload for " + fileName)
             bucket=con.get_bucket(bucket_name)
             key=bucket.new_key(fileName)
             key.set_contents_from_filename(fileName)
@@ -161,13 +164,15 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             remove_status=subprocess.call(["rm", fileName])
             key = bucket.get_key(fileName)
             key.get_contents_to_filename(fileName)
-            dlFileMd5 = generate_file_md5(fileName)
+            s3FileMd5 = generate_file_md5(fileName)
+            statinfo = os.stat(fileName)               #### get size of file downloaded from ftp
+            s3Size = statinfo.st_size                  #size_gb = float(size) / (2**30)
             if md5_ref_dictionary != 0:                       ### Option to check against reference md5
                 ref_md5 = get_value(my_key=fileName, my_dictionary=md5_ref_dictionary)
-                if dlFileMd5 == ref_md5:
-                    dl_md5_check = "md5_PASS"
+                if s3FileMd5 == ref_md5:
+                    ul_md5_check = "md5_PASS"
                 else:
-                    dl_md5_check = "md5_FAIL"
+                    ul_md5_check = "md5_FAIL"
             else:
                 ref_md5 = "NA"
                 dl_md5_check = "NA"
