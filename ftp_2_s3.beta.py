@@ -3,6 +3,13 @@
 # test with
 # ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/PJL/HG03633/exome_alignment/HG03633.alt_bwamem_GRCh38DH.20150826.PJL.exome.cram
 # 131171985 bytes (0.12Gb) # smallest of the set of exome files
+# and these for testing multipart upload
+# ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/TSI/NA20787/exome_alignment/NA20787.alt_bwamem_GRCh38DH.20150826.TSI.exome.cram
+# 4589641085 bytes (4.27Gb)
+# ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/ASW/NA20313/exome_alignment/NA20313.alt_bwamem_GRCh38DH.20150826.ASW.exome.cram
+# 24010297995 bytes (22.36Gb)
+# 
+# 
 
 import sys
 import argparse
@@ -87,7 +94,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
         if debug == True:
             print( "SUB :: Bucket_name: " + bucket_name )
         if dlSize > 4*(2**30): # use multipart upload for anything larger than 4Gb 
-            upload_string = "multipart_upload.py" + " creds " + args.bucket_name + " " + fileName + " < " + fileName 
+            upload_string = "multipart_upload.py" + " -a " + args.access_key + " -s " + args.secret_key + " -b " args.bucket_name + " -k " + fileName + " < " + fileName 
             os.system(upload_string)
         else:
             bucket=con.get_bucket(bucket_name)

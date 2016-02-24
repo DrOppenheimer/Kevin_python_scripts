@@ -14,22 +14,30 @@ GIG = 2**30
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='Multipart from stdin.')
+
+    parser = argparse.ArgumentParser(description='Multipart from stdin. - modified from Mark\'s version')
+    parser.add_argument('-a','--access_key', help='access key', required=True)
+    parser.add_argument('-s','--secret_key', help='secret key', required=True)
+    parser.add_argument('-b','--bucket_name', help='bucket name', required=True)
+    parser.add_argument('-k','--bucket_key', help='bucket key', required=True)
+    args = parser.parse_args()
+    
+    #parser = argparse.ArgumentParser(description='Multipart from stdin.')
 
     parser.add_argument('-d', '--debug',
         action='store_true',
         help='Enabled debug-level logging.',
     )
 
-    parser.add_argument('credentials',
-        type=argparse.FileType('r'),
-        help='Credentials file.',
-    )
+    #parser.add_argument('credentials',
+    #    type=argparse.FileType('r'),
+    #    help='Credentials file.',
+    #)
 
-    parser.add_argument('bucket')
-    parser.add_argument('key')
-
-    args = parser.parse_args()
+    #parser.add_argument('bucket')
+    #parser.add_argument('key')
+    
+    #args = parser.parse_args()
 
     logging.basicConfig(
         level=logging.DEBUG if args.debug else logging.INFO,
