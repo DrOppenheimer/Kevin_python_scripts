@@ -54,9 +54,9 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
         print "SUB :: FILE_NAME: " + fileName
     line = line.rstrip("\n")
     if debug==True:
-        print("Length line :: " + str(len(line))  )
+        print("SUB :: Length line :: " + str(len(line))  )
     if len(line) == 0:
-        sys.exit("This line of the list is empty, terminating script")
+        sys.exit("SUB :: This line of the list is empty, terminating script")
     tic = time.time()
     if proxy==True:
         #proxy_command = ("with_proxy wget " + line)
@@ -68,10 +68,10 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
     else:
         wget_status=subprocess.call(["wget", line])
     if debug==True:
-        print ("SUB :: WGET_STATUS: " + str(wget_status))
+        print ("SUB :: WGET_STATUS :: " + str(wget_status))
     dlTime = time.time() - tic
     if wget_status == 0:
-        print ("SUB :: calculating dl md5 " + fileName)   #### get md5 for file downloaded from ftp
+        print ("SUB :: calculating dl md5 :: " + fileName)   #### get md5 for file downloaded from ftp
         dlFileMd5 = generate_file_md5(fileName)    # uses function generate_file_md5 -- in your scripts
         if debug == True:
                 print( "SUB :: " + fileName + " :: FTP_MD5 :: " + dlFileMd5  )
@@ -90,12 +90,12 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
         dlSize = statinfo.st_size                  #size_gb = float(size) / (2**30)
         if debug==True:
             print("SUB :: " + fileName + " :: dl_size :: " + str(dlSize))
-        print ("SUB :: uploading " + fileName)            #### upload to s3
+        print ("SUB :: uploading :: " + fileName)            #### upload to s3
         tic = time.time()
         #con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, host=gateway, calling_format=boto.s3.connection.OrdinaryCallingFormat()) # worked on Sullivan
         con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, is_secure=True, host=gateway, calling_format=boto.s3.connection.OrdinaryCallingFormat()) # for Griffin
         if debug == True:
-            print( "SUB :: Bucket_name: " + bucket_name )
+            print( "SUB :: Bucket_name :: " + bucket_name )
         if dlSize > 4*(2**30): # use multipart upload for anything larger than 4Gb 
             #upload_string = "multipart_upload.py" + " -a " + args.access_key + " -s " + args.secret_key + " -b " args.bucket_name + " -k " + fileName + " < " + fileName 
             #os.system(upload_string)
@@ -134,7 +134,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             key=bucket.new_key(fileName)
             key.set_contents_from_filename(fileName)
         ulTime = time.time() - tic
-        print ("delete local copy of " + fileName) ### remove local copy of file
+        print ("SUB :: delete local copy of " + fileName) ### remove local copy of file
         #remove_status=subprocess.call(["rm", fileName])
         delete_command = "sudo rm -f " + fileName
         remove_status=os.system(delete_command)
@@ -234,7 +234,7 @@ with open(args.list) as f:
                     print("MAIN :: Attempt " + str(my_attempt))
                     print("MAIN :: Bucket_name: " + args.bucket_name)
                 time.sleep(1)
-                print("STARTING download and upload attempt ( " + str(my_attempt) + " ) for " + my_fileName)
+                print("MAIN :: STARTING download and upload attempt ( " + str(my_attempt) + " ) for " + my_fileName)
                 ftp_status=ftp_dl(line=my_line, fileName=my_fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, md5_ref_dictionary=my_md5_ref_dictionary, gateway=args.gateway, proxy=args.proxy, debug=args.debug)
                 if ftp_status == 0:
                     print("MAIN :: " + my_fileName + " download and upload FINISHED on attempt ( " + str(my_attempt) + " )")
@@ -244,5 +244,5 @@ with open(args.list) as f:
                     if ftp_status != 0:
                         print("MAIN :: final download attempt ( " + str(my_attempt) + " ) FAILED")
             else:
-                print(my_fileName + "download and upload FINISHED on attempt ( " + str(my_attempt) + " )")
+                print("MAIN :: " + my_fileName + "download and upload FINISHED on attempt ( " + str(my_attempt) + " )")
 
