@@ -42,6 +42,10 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
     if debug==True:
         print "SUB :: FILE_NAME: " + fileName
     line = line.rstrip("\n")
+    if debug==True:
+        print("Length line :: " + len(line)  )
+    if len(line) == 0:
+        sys.exit()
     tic = time.time()
     if proxy==True:
         #proxy_command = ("with_proxy wget " + line)
