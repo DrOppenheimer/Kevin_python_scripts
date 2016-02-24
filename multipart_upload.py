@@ -20,7 +20,7 @@ if __name__ == '__main__':
     parser.add_argument('-s','--secret_key', help='secret key', required=True)
     parser.add_argument('-b','--bucket_name', help='bucket name', required=True)
     parser.add_argument('-k','--bucket_key', help='bucket key', required=True)
-    parser.add_argument('-d','--debug', help='debug')
+    #parser.add_argument('-d','--debug', help='debug')
     args = parser.parse_args()
     
     #parser = argparse.ArgumentParser(description='Multipart from stdin.')
@@ -40,10 +40,10 @@ if __name__ == '__main__':
     
     #args = parser.parse_args()
 
-    logging.basicConfig(
-        level=logging.DEBUG if args.debug else logging.INFO,
-        format='%(asctime)s %(name)-6s %(levelname)-4s %(message)s',
-    )
+    #logging.basicConfig(
+    #    level=logging.DEBUG if args.debug else logging.INFO,
+    #    format='%(asctime)s %(name)-6s %(levelname)-4s %(message)s',
+    #)
 
     credentials= json.load(args.credentials)
 
