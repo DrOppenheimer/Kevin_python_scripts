@@ -48,8 +48,8 @@ if __name__ == '__main__':
     #credentials= json.load(args.credentials)
 
     conn = boto.connect_s3(
-        aws_access_key_id     = args.access_key #credentials.get('access_key'),
-        aws_secret_access_key = args.secret_key #credentials.get('secret_key'),
+        aws_access_key_id     = args.access_key, #credentials.get('access_key'),
+        aws_secret_access_key = args.secret_key, #credentials.get('secret_key'),
         #host                  = credentials.get('host'),
         #port                  = credentials.get('port'),
         #is_secure             = credentials.get('is_secure', True),
