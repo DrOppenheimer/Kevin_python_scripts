@@ -18,7 +18,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Multipart from stdin. - modified from Mark\'s version')
     parser.add_argument('-a','--access_key', help='access key', required=True)
     parser.add_argument('-s','--secret_key', help='secret key', required=True)
-    parser.add_argument('-h','--host', help='s3 host', required=True)
+    parser.add_argument('-g','--gateway', help='s3 gateway/host', required=True)
     parser.add_argument('-b','--bucket_name', help='bucket name', required=True)
     parser.add_argument('-k','--bucket_key', help='bucket key', required=True)
     #parser.add_argument('-d','--debug', help='debug')
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     conn = boto.connect_s3(
         aws_access_key_id     = args.access_key, #credentials.get('access_key'),
         aws_secret_access_key = args.secret_key, #credentials.get('secret_key'),
-        host                  = args.host, #credentials.get('host'),
+        host                  = args.gateway, #credentials.get('host'),
         #port                  = credentials.get('port'),
         is_secure             = True, #credentials.get('is_secure', True),
         calling_format        = boto.s3.connection.OrdinaryCallingFormat(),
