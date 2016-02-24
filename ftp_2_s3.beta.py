@@ -4,6 +4,7 @@
 # ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/PJL/HG03633/exome_alignment/HG03633.alt_bwamem_GRCh38DH.20150826.PJL.exome.cram
 # 131171985 bytes (0.12Gb) # smallest of the set of exome files
 
+import sys
 import argparse
 import os
 import time
