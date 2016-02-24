@@ -6,7 +6,6 @@ import json
 import mmap
 import logging
 import argparse
-
 import boto
 import boto.s3.connection
 
