@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+# test with
+# ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/PJL/HG03633/exome_alignment/HG03633.alt_bwamem_GRCh38DH.20150826.PJL.exome.cram
+# 131171985 bytes (0.12Gb) # smallest of the set of exome files
+
 import argparse
 import os
 import time
@@ -25,7 +29,6 @@ parser.add_argument('-p', '--proxy', action="store_true", help='run using \"with
 parser.add_argument('-d', '--debug', action="store_true", help='run in debug mode')
 args = parser.parse_args()
 
-my_proxy=""
 
 def get_value(my_key, my_dictionary):
     if my_dictionary.has_key(my_key):
@@ -42,7 +45,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
     tic = time.time()
     if proxy==True:
         #proxy_command = ("with_proxy wget " + line)
-        proxy_command = ("HTTP_PROXY=http://cloud-proxy:3128; export HTTP_PROXY; HTTPS_PROXY=http://cloud-proxy:3128; export HTTPS_PROXY; http_proxy=http://cloud-proxy:3128; export http_proxy; https_proxy=http://cloud-proxy:3128; export https_proxy; ftp_proxy=http://cloud-proxy:3128; export ftp_proxy; ~/.bashrc; sudo -E wget " + line)
+        proxy_command = ("HTTP_PROXY=http://cloud-proxy:3128; export HTTP_PROXY; HTTPS_PROXY=http://cloud-proxy:3128; export HTTPS_PROXY; http_proxy=http://cloud-proxy:3128; export http_proxy; https_proxy=http://cloud-proxy:3128; export https_proxy; ftp_proxy=http://cloud-proxy:3128; export ftp_proxy; ~/.bashrc; sudo -E wget " + line) ### <- ###
         if debug==True:
             print( "SUB :: proxy_command :" + proxy_command )
         wget_status=os.system(proxy_command)
@@ -75,17 +78,13 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
         print ("SUB :: uploading " + fileName)            #### upload to s3
         tic = time.time()
         #con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, host=gateway, calling_format=boto.s3.connection.OrdinaryCallingFormat()) # worked on Sullivan
-        con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, host=gateway) # for Griffin
+        con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, is_secure=True, host=gateway, calling_format=boto.s3.connection.OrdinaryCallingFormat()) # for Griffin
         if debug == True:
             print( "SUB :: Bucket_name: " + bucket_name )
         if dlSize > 4*(2**30): # use multipart upload for anything larger than 4Gb 
             upload_string = "multipart_upload.py" + " creds " + args.bucket_name + " " + fileName + " < " + fileName 
             os.system(upload_string)
         else:
-            #key=Key(name=fileName, bucket=bucket)
-            #key=bucket.get_key(bucket_name)
-            #key.set_contents_from_filename(fileName)
-            #bucket.set_contents_from_filename(fileName)
             bucket=con.get_bucket(bucket_name)
             key=bucket.new_key(fileName)
             key.set_contents_from_filename(fileName)
@@ -98,8 +97,8 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             log_string = fileName + '\t' + "rm failed" + '\n'
             LOGFILE.write(log_string)
             LOGFILE.flush()
-        #s3FileMd5=bucket.get_key(key).etag[1 :-1]  ### Get the md5 for the file on s3
-        s3FileMd5="fix later"
+        s3FileMd5=bucket.get_key(key).etag[1 :-1]  ### Get the md5 for the file on s3
+        #s3FileMd5="fix later"
         if debug == True:
                 print( "SUB :: " + fileName + " :: s3_MD5 :: " + str(s3FileMd5)  )
         if md5_ref_dictionary != 0:                       ### Option to check against reference md5
@@ -116,9 +115,23 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             print("SUB :: " + fileName + " :: s3_size :: " + str(s3Size))
         print ("SUB :: printing to log " + fileName)      #### print to log
         if dlSize > 4*(2**30):
-            log_string = fileName + '\t' + ref_md5 + '\t' + str(dlSize) + '\t' + str(dlFileMd5) + '\t' + dl_md5_check + '\t' + str(dlTime) + '\t' + str(s3Size) + '\t' + str(s3FileMd5) + '\t' + ul_md5_check + '\t' + str(ulTime) + '\t' + "File > 4Gb (4*(2^30) bytes), used multipart upload - upload md5 WILL NOT match dl md5" '\n'
-        else:
-            log_string = fileName + '\t' + ref_md5 + '\t' + str(dlSize) + '\t' + str(dlFileMd5) + '\t' + dl_md5_check + '\t' + str(dlTime) + '\t' + str(s3Size) + '\t' + str(s3FileMd5) + '\t' + ul_md5_check + '\t' + str(ulTime) + '\n'
+            # download the object from the object store and calculate md5 (only for objects that used multipart upload)
+            remove_status=subprocess.call(["rm", fileName])
+            key = bucket.get_key(fileName)
+            key.get_contents_to_filename(fileName)
+            dlFileMd5 = generate_file_md5(fileName)
+            if md5_ref_dictionary != 0:                       ### Option to check against reference md5
+                ref_md5 = get_value(my_key=fileName, my_dictionary=md5_ref_dictionary)
+                if dlFileMd5 == ref_md5:
+                    dl_md5_check = "md5_PASS"
+                else:
+                    dl_md5_check = "md5_FAIL"
+            else:
+                ref_md5 = "NA"
+                dl_md5_check = "NA"if md5_ref_dictionary != 0:
+            #log_string = fileName + '\t' + ref_md5 + '\t' + str(dlSize) + '\t' + str(dlFileMd5) + '\t' + dl_md5_check + '\t' + str(dlTime) + '\t' + str(s3Size) + '\t' + str(s3FileMd5) + '\t' + ul_md5_check + '\t' + str(ulTime) + '\t' + "File > 4Gb (4*(2^30) bytes), used multipart upload - upload md5 WILL NOT match dl md5" '\n'
+        #else:
+        log_string = fileName + '\t' + ref_md5 + '\t' + str(dlSize) + '\t' + str(dlFileMd5) + '\t' + dl_md5_check + '\t' + str(dlTime) + '\t' + str(s3Size) + '\t' + str(s3FileMd5) + '\t' + ul_md5_check + '\t' + str(ulTime) + '\n'
         print ("SUB :: Done processing sample ( " + str(sample) + " ) :: " + fileName)
         LOGFILE.write(log_string)
         LOGFILE.flush()
@@ -129,9 +142,6 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
             log_string = fileName + '\t' + " :: download and/or rm failed" + '\n'
             LOGFILE.write(log_string)
             LOGFILE.flush()
-            #log_string = fileName + '\t' + "wget failed" + '\n'
-            #LOGFILE.write(log_string)
-            #LOGFILE.flush()
             return wget_status
 
 ### MAIN ###
