@@ -108,7 +108,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
                 i += 1
 
                 if debug==True:
-                    print("SUB :: multipart upload part ( " + i + " ) for " + fileName)                
+                    print("SUB :: multipart upload part ( " + str(i) + " ) for " + fileName)                
                 ramdisk = mmap.mmap(-1, GIG)
                 ramdisk.write(sys.stdin.read(GIG))
         
