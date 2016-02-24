@@ -56,7 +56,7 @@ if __name__ == '__main__':
         #calling_format        = boto.s3.connection.OrdinaryCallingFormat(),
     )
 
-    mp = conn.get_bucket(args.bucket).initiate_multipart_upload(args.key)
+    mp = conn.get_bucket(args.bucket_name).initiate_multipart_upload(args.bucket_key)
 
     i = 0
     while True:
