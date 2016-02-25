@@ -99,7 +99,7 @@ def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictiona
         if dlSize > 4*(2**30): # use multipart upload for anything larger than 4Gb 
             #upload_string = "multipart_upload.py" + " -a " + args.access_key + " -s " + args.secret_key + " -b " args.bucket_name + " -k " + fileName + " < " + fileName 
             #os.system(upload_string)
-            GIG = 2**30
+            GIG = 2**30   ######### Adapted from Mark's multipart_upload.py
     
             mp = con.get_bucket(bucket_name).initiate_multipart_upload(fileName)
 
