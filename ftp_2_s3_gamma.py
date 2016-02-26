@@ -126,7 +126,7 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary):
                 (ftp_status, download_time) = ftp_download(
                     line=my_line, LOGFILE=LOGFILE, file_name=my_file_name, 
                     debug=args.debug, force_download=args.force_download,
-                    stats=stat)
+                    stats=stats)
                 if ftp_status == 0:
                     dl_md5_check = check_md5_and_size(my_file_name, my_md5_ref_dictionary, stats=stats)
                     if dl_md5_check == "md5_PASS":
@@ -191,9 +191,9 @@ def ftp_download(line, LOGFILE, file_name, debug, force_download, stats={}):
     if wget_status !=0:
         remove_status=subprocess.call(["rm", file_name])
         if remove_status != 0:
-            log_string = file_name + '\t' + " :: download and/or rm failed" + '\n'
-            LOGFILE.write(log_string)
-            LOGFILE.flush()
+            #log_string = file_name + '\t' + " :: download and/or rm failed" + '\n'
+            #LOGFILE.write(log_string)
+            #LOGFILE.flush()
     stats['download_time'] = dlTime
 
     return wget_status, dlTime
