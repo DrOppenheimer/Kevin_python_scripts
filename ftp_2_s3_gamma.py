@@ -45,6 +45,7 @@ def run():
     if args.proxy:
         os.environ['http_proxy'] = 'http://cloud-proxy:3128'
         os.environ['https_proxy'] = 'http://cloud-proxy:3128'
+        os.environ['ftp_proxy'] = 'http://cloud-proxy:3128'
 
     # optional, you can also put secrets in {HOME}/aws/.credentials
     if args.access_key:
