@@ -14,8 +14,9 @@ import hashlib
 #     return md5.hexdigest()
 
 #def generate_file_md5(rootdir, filename, blocksize=2**20):
-def generate_file_md5(filename, blocksize=2**20):
+def generate_file_md5(filename, blocksize=2**20, debug=True):
     m = hashlib.md5()
+    size = 0
     #with open( os.path.join(rootdir, filename) , "rb" ) as f:
     with open( filename , "rb" ) as f:
         while True:
@@ -23,7 +24,8 @@ def generate_file_md5(filename, blocksize=2**20):
             if not buf:
                 break
             m.update( buf )
-    return m.hexdigest()
+            size += len(buf)
+    return m.hexdigest(), size
 
 
 # def generate_file_md5(file):
