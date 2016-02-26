@@ -43,8 +43,8 @@ def run():
     parser.add_argument('-fd', '--force-download', action="store_true", help='force to download even if file exists')
     args = parser.parse_args()
     if args.proxy:
-        os.environ['http_proxy'] = 'http://cloud-proxy'
-        os.environ['https_proxy'] = 'http://cloud-proxy'
+        os.environ['http_proxy'] = 'http://cloud-proxy:3128'
+        os.environ['https_proxy'] = 'http://cloud-proxy:3128'
 
     # optional, you can also put secrets in {HOME}/aws/.credentials
     if args.access_key:
