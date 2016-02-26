@@ -194,7 +194,7 @@ def ftp_download(line, LOGFILE, file_name, debug, force_download, stats={}):
             #log_string = file_name + '\t' + " :: download and/or rm failed" + '\n'
             #LOGFILE.write(log_string)
             #LOGFILE.flush()
-    stats['download_time'] = dlTime
+        stats['download_time'] = dlTime
 
     return wget_status, dlTime
 
