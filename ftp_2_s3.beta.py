@@ -26,19 +26,89 @@ import multipart_upload
 from boto.s3.key import Key
 from generate_file_md5 import generate_file_md5
 
-parser = argparse.ArgumentParser(description='Simple script to perform a boto download')
-parser.add_argument('-l','--list', help='file with list of ftp addresses', required=True, default="test")
-parser.add_argument('-a','--access_key', help='access key', required=True)
-parser.add_argument('-s','--secret_key', help='secret key', required=True)
-parser.add_argument('-g','--gateway', help='s3 host/gateway', default='griffin-objstore.opensciencedatacloud.org')
-parser.add_argument('-f','--caling_format', help='calling format', default='boto.s3.connection.OrdinaryCallingFormat()')
-parser.add_argument('-b','--bucket_name', help='bucket name', default='1000_genome_exome')
-parser.add_argument('-c','--credentials', help='credentials file for multipart upload: access_key, secret_key', required=True)
-parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
-parser.add_argument('-k', '--md5_ref_dictionary', help='provide a list ( name \t md5 ) to compare against', default=0)
-parser.add_argument('-p', '--proxy', action="store_true", help='run using \"with_proxy\"')
-parser.add_argument('-d', '--debug', action="store_true", help='run in debug mode')
-args = parser.parse_args()
+
+
+def run():
+    parser = argparse.ArgumentParser(description='Simple script to perform a boto download')
+    parser.add_argument('-l','--list', help='file with list of ftp addresses', required=True, default="test")
+    parser.add_argument('-a','--access_key', help='access key', required=True)
+    parser.add_argument('-s','--secret_key', help='secret key', required=True)
+    parser.add_argument('-g','--gateway', help='s3 host/gateway', default='griffin-objstore.opensciencedatacloud.org')
+    parser.add_argument('-f','--caling_format', help='calling format', default='boto.s3.connection.OrdinaryCallingFormat()')
+    parser.add_argument('-b','--bucket_name', help='bucket name', default='1000_genome_exome')
+    parser.add_argument('-c','--credentials', help='credentials file for multipart upload: access_key, secret_key', required=True)
+    parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
+    parser.add_argument('-k', '--md5_ref_dictionary', help='provide a list ( name \t md5 ) to compare against', default=0)
+    parser.add_argument('-p', '--proxy', action="store_true", help='run using \"with_proxy\"')
+    parser.add_argument('-d', '--debug', action="store_true", help='run in debug mode')
+    parser.add_argument('-fd', '--force-download', action="store_true", help='force to download even if file exists')
+    args = parser.parse_args()
+    if args.proxy:
+        os.environ['http_proxy'] = 'http://cloud-proxy'
+        os.environ['https_proxy'] = 'http://cloud-proxy'
+    ### MAIN ###
+
+    #read in compare list if option is specified
+    # read in compare list if option is specified
+    #     my_md5_ref_dictionary = {}
+    #     for line in open(args.md5_ref_dictionary):
+    #         (key,val) = line.split('\t')
+    #         my_md5_ref_dictionary[key] = val
+    # else:
+    #     my_md5_ref_dictionary = 0 
+    if args.md5_ref_dictionary != 0:
+        my_md5_ref_dictionary = {}
+        with open(args.md5_ref_dictionary) as f:
+            for line in f:
+                line = line.rstrip("\n")
+                (key, val) = line.split('\t')
+                my_md5_ref_dictionary[key] = val
+    else:
+        my_md5_ref_dictionary = 0
+
+    
+    # heavy lifting 
+    LOGFILE = open('./' + args.list + '.ul_log.txt', 'w+')
+    LOGFILE.write('file_name' + '\t' + 'ref_md5' +'\t' + 'local_size(bytes)' + '\t' + 'local_md5' + '\t' + 'local_md5_check' + '\t' + 'dl_time(s)' + '\t' + 's3_size(bytes)' + '\t' + 's3_md5' + '\t' + 's3_md5_check' + '\t' + 'ul_time(s)' + '\n')
+    LOGFILE.flush()
+    sample=0
+
+    with open(args.list) as f:
+        for my_line in f:
+            sample += 1
+            splitLine = my_line.split("/")
+            my_file_name = splitLine[ len(splitLine) - 1 ]
+            my_file_name = my_file_name.rstrip("\n")
+            print ("MAIN :: Processing sample ( " + str(sample) + " ) :: " + my_file_name)
+            ftp_status=1
+            my_attempt=0
+            if my_attempt <= args.retry:
+                if ftp_status != 0:
+                    my_attempt += 1
+                    if args.debug == True:
+                        print("MAIN :: Attempt " + str(my_attempt))
+                        print("MAIN :: Bucket_name: " + args.bucket_name)
+                    time.sleep(1)
+                    print("MAIN :: STARTING download and upload attempt ( " + str(my_attempt) + " ) for " + my_file_name)
+                    ftp_status=ftp_download(
+                        line=my_line, file_name=my_file_name, 
+                        debug=args.debug, force_download=args.force_download)
+                    if ftp_status == 0:
+                        dl_md5_check = check_md5_and_size(file_name, my_md5_ref_dictionary)
+                        if dl_md5_check == "md5_PASS":
+                            upload_file(file_name, bucket_name, args)
+
+                    return
+
+                    if ftp_status == 0:
+                        print("MAIN :: " + my_file_name + " download and upload FINISHED on attempt ( " + str(my_attempt) + " )")
+                    if args.debug==True:
+                        print( "MAIN :: FTP_STATUS: " + str(ftp_status) )
+                    if my_attempt == args.retry:
+                        if ftp_status != 0:
+                            print("MAIN :: final download attempt ( " + str(my_attempt) + " ) FAILED")
+                else:
+                    print("MAIN :: " + my_file_name + "download and upload FINISHED on attempt ( " + str(my_attempt) + " )")
 
 
 def get_value(my_key, my_dictionary):
@@ -49,200 +119,157 @@ def get_value(my_key, my_dictionary):
     else:        
         return ("key does not exist")
 
-def ftp_dl(line, fileName, access_key, secret_key, bucket_name, md5_ref_dictionary, proxy, gateway, debug):
+def ftp_download(line, file_name, debug, force_download):
     if debug==True:
-        print "SUB :: FILE_NAME: " + fileName
+        print "SUB :: FILE_NAME: " + file_name
+    if not force_download and os.path.exists(file_name):
+        if debug:
+            print "SUB :: File {} exists, skip downloading from ftp".format(file_name)
+        return 0, 0
+
     line = line.rstrip("\n")
     if debug==True:
         print("SUB :: Length line :: " + str(len(line))  )
     if len(line) == 0:
         sys.exit("SUB :: This line of the list is empty, terminating script")
     tic = time.time()
-    if proxy==True:
-        #proxy_command = ("with_proxy wget " + line)
-        proxy_command = ("HTTP_PROXY=http://cloud-proxy:3128; export HTTP_PROXY; HTTPS_PROXY=http://cloud-proxy:3128; export HTTPS_PROXY; http_proxy=http://cloud-proxy:3128; export http_proxy; https_proxy=http://cloud-proxy:3128; export https_proxy; ftp_proxy=http://cloud-proxy:3128; export ftp_proxy; ~/.bashrc; sudo -E wget " + line) ### <- ###
-        if debug==True:
-            print( "SUB :: proxy_command :" + proxy_command )
-        wget_status=os.system(proxy_command)
-        #wget_status=subprocess.call(["with_proxy wget", line])
+    if sys.platform == 'darwin':
+        with open(file_name, 'wb') as f:
+            wget_status=subprocess.call(["curl", line], env=os.environ, stdout=f)
     else:
-        wget_status=subprocess.call(["wget", line])
+        wget_status=subprocess.call(["wget", line], env=os.environ)
     if debug==True:
         print ("SUB :: WGET_STATUS :: " + str(wget_status))
     dlTime = time.time() - tic
-    if wget_status == 0:
-        print ("SUB :: calculating dl md5 :: " + fileName)   #### get md5 for file downloaded from ftp
-        dlFileMd5 = generate_file_md5(fileName)    # uses function generate_file_md5 -- in your scripts
-        if debug == True:
-                print( "SUB :: " + fileName + " :: FTP_MD5 :: " + dlFileMd5  )
-        if md5_ref_dictionary != 0:                       ### Option to check against reference md5
-            ref_md5 = get_value(my_key=fileName, my_dictionary=md5_ref_dictionary)
-            if debug == True:
-                print( "SUB :: " + fileName + " :: REF_MD5 :: " + str(ref_md5)  )
-            if dlFileMd5 == ref_md5:
-                dl_md5_check = "md5_PASS"
-            else:
-                dl_md5_check = "md5_FAIL"
-        else:
-            ref_md5 = "NA"
-            dl_md5_check = "NA"
-        statinfo = os.stat(fileName)               #### get size of file downloaded from ftp
-        dlSize = statinfo.st_size                  #size_gb = float(size) / (2**30)
-        if debug==True:
-            print("SUB :: " + fileName + " :: dl_size :: " + str(dlSize))
-        print ("SUB :: uploading :: " + fileName)            #### upload to s3
-        tic = time.time()
-        #con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, host=gateway, calling_format=boto.s3.connection.OrdinaryCallingFormat()) # worked on Sullivan
-        con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, is_secure=True, host=gateway, calling_format=boto.s3.connection.OrdinaryCallingFormat()) # for Griffin
-        if debug == True:
-            print( "SUB :: Bucket_name :: " + bucket_name )
-        if dlSize > 4*(2**30): # use multipart upload for anything larger than 4Gb 
-            #upload_string = "multipart_upload.py" + " -a " + args.access_key + " -s " + args.secret_key + " -b " args.bucket_name + " -k " + fileName + " < " + fileName 
-            #os.system(upload_string)
-            GIG = 2**30   ######### Adapted from Mark's multipart_upload.py
-    
-            mp = con.get_bucket(bucket_name).initiate_multipart_upload(fileName)
-
-            i = 0
-            while True:
-                i += 1
-
-                if debug==True:
-                    print("SUB :: multipart upload part ( " + str(i) + " ) for " + fileName)                
-                ramdisk = mmap.mmap(-1, GIG)
-                ramdisk.write(sys.stdin.read(GIG))
-        
-                size = ramdisk.tell()
-                if not size:
-                    break
-        
-                ramdisk.seek(0)
-                #logging.ingo('Uploading chunk {}'.format(i))
-        
-                try: mp.upload_part_from_file(ramdisk, part_num=i, size=size)
-                except Exception as err:
-                    #logging.error('Failed writing part - cancelling multipart.')
-                    mp.cancel_upload()
-                    raise
-
-            #logging.info('Completing multipart.')
-            mp.complete_upload()
-
-        else:
-            print("SUB :: single part upload for " + fileName)
-            bucket=con.get_bucket(bucket_name)
-            key=bucket.new_key(fileName)
-            key.set_contents_from_filename(fileName)
-        ulTime = time.time() - tic
-        print ("SUB :: delete local copy of " + fileName) ### remove local copy of file
-        #remove_status=subprocess.call(["rm", fileName])
-        delete_command = "sudo rm -f " + fileName
-        remove_status=os.system(delete_command)
+    if wget_status !=0:
+        remove_status=subprocess.call(["rm", file_name])
         if remove_status != 0:
-            log_string = fileName + '\t' + "rm failed" + '\n'
+            log_string = file_name + '\t' + " :: download and/or rm failed" + '\n'
             LOGFILE.write(log_string)
             LOGFILE.flush()
-        s3FileMd5=bucket.get_key(key).etag[1 :-1]  ### Get the md5 for the file on s3
-        #s3FileMd5="fix later"
+    return wget_status, dlTime
+
+
+def check_md5_and_size(file_name, md5_ref_dictionary):
+    print ("SUB :: calculating dl md5 :: " + file_name)   #### get md5 for file downloaded from ftp
+    dlFileMd5, dlSize = generate_file_md5(file_name)    # uses function generate_file_md5 -- in your scripts
+    if debug == True:
+            print( "SUB :: " + file_name + " :: FTP_MD5 :: " + dlFileMd5  )
+    if md5_ref_dictionary != 0:                       ### Option to check against reference md5
+        ref_md5 = get_value(my_key=file_name, my_dictionary=md5_ref_dictionary)
         if debug == True:
-                print( "SUB :: " + fileName + " :: s3_MD5 :: " + str(s3FileMd5)  )
+            print( "SUB :: " + file_name + " :: REF_MD5 :: " + str(ref_md5)  )
+        if dlFileMd5 == ref_md5:
+            dl_md5_check = "md5_PASS"
+        else:
+            dl_md5_check = "md5_FAIL"
+    else:
+        ref_md5 = "NA"
+        dl_md5_check = "NA"
+    if debug==True:
+        print("SUB :: " + file_name + " :: dl_size :: " + str(dlSize))
+    return dl_md5_check
+
+
+def upload_file(file_name, bucket_name, args):
+    print ("SUB :: uploading :: " + file_name)            #### upload to s3
+    tic = time.time()
+    #con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, host=gateway, calling_format=boto.s3.connection.OrdinaryCallingFormat()) # worked on Sullivan
+    con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, 
+        is_secure=True, host=args.gateway, calling_format=boto.s3.connection.OrdinaryCallingFormat()) # for Griffin
+    if debug == True:
+        print( "SUB :: Bucket_name :: " + bucket_name )
+    if dlSize > 4*(2**30): # use multipart upload for anything larger than 4Gb 
+        #upload_string = "multipart_upload.py" + " -a " + args.access_key + " -s " + args.secret_key + " -b " args.bucket_name + " -k " + file_name + " < " + file_name 
+        #os.system(upload_string)
+        GIG = 2**30   ######### Adapted from Mark's multipart_upload.py
+
+        mp = con.get_bucket(bucket_name).initiate_multipart_upload(file_name)
+
+        i = 0
+        while True:
+            i += 1
+
+            if debug==True:
+                print("SUB :: multipart upload part ( " + str(i) + " ) for " + file_name)                
+            ramdisk = mmap.mmap(-1, GIG)
+            ramdisk.write(sys.stdin.read(GIG))
+    
+            size = ramdisk.tell()
+            if not size:
+                break
+    
+            ramdisk.seek(0)
+            #logging.ingo('Uploading chunk {}'.format(i))
+    
+            try: mp.upload_part_from_file(ramdisk, part_num=i, size=size)
+            except Exception as err:
+                #logging.error('Failed writing part - cancelling multipart.')
+                mp.cancel_upload()
+                raise
+
+        #logging.info('Completing multipart.')
+        mp.complete_upload()
+
+    else:
+        print("SUB :: single part upload for " + file_name)
+        bucket=con.get_bucket(bucket_name)
+        key=bucket.new_key(file_name)
+        key.set_contents_from_file_name(file_name)
+    ulTime = time.time() - tic
+
+def cleanup():
+    print ("SUB :: delete local copy of " + file_name) ### remove local copy of file
+    #remove_status=subprocess.call(["rm", file_name])
+    delete_command = "sudo rm -f " + file_name
+    remove_status=os.system(delete_command)
+    if remove_status != 0:
+        log_string = file_name + '\t' + "rm failed" + '\n'
+        LOGFILE.write(log_string)
+        LOGFILE.flush()
+    s3FileMd5=bucket.get_key(key).etag[1 :-1]  ### Get the md5 for the file on s3
+    #s3FileMd5="fix later"
+    if debug == True:
+            print( "SUB :: " + file_name + " :: s3_MD5 :: " + str(s3FileMd5)  )
+    if md5_ref_dictionary != 0:                       ### Option to check against reference md5
+        ref_md5 = get_value(my_key=file_name, my_dictionary=md5_ref_dictionary)
+        if dlFileMd5 == ref_md5:
+            ul_md5_check = "md5_PASS"
+        else:
+            ul_md5_check = "md5_FAIL"
+    else:
+        ref_md5 = "NA"
+        ul_md5_check = "NA"
+    s3Size=bucket.lookup(file_name).size        ### Get the size for the file on s3
+    if debug==True:
+        print("SUB :: " + file_name + " :: s3_size :: " + str(s3Size))
+    print ("SUB :: printing to log " + file_name)      #### print to log
+    if dlSize > 4*(2**30):
+        # download the object from the object store and calculate md5 (only for objects that used multipart upload)
+        remove_status=subprocess.call(["rm", file_name])
+        key = bucket.get_key(file_name)
+        key.get_contents_to_file_name(file_name)
+        s3FileMd5 = generate_file_md5(file_name)
+        statinfo = os.stat(file_name)               #### get size of file downloaded from ftp
+        s3Size = statinfo.st_size                  #size_gb = float(size) / (2**30)
         if md5_ref_dictionary != 0:                       ### Option to check against reference md5
-            ref_md5 = get_value(my_key=fileName, my_dictionary=md5_ref_dictionary)
-            if dlFileMd5 == ref_md5:
+            ref_md5 = get_value(my_key=file_name, my_dictionary=md5_ref_dictionary)
+            if s3FileMd5 == ref_md5:
                 ul_md5_check = "md5_PASS"
             else:
                 ul_md5_check = "md5_FAIL"
         else:
             ref_md5 = "NA"
-            ul_md5_check = "NA"
-        s3Size=bucket.lookup(fileName).size        ### Get the size for the file on s3
-        if debug==True:
-            print("SUB :: " + fileName + " :: s3_size :: " + str(s3Size))
-        print ("SUB :: printing to log " + fileName)      #### print to log
-        if dlSize > 4*(2**30):
-            # download the object from the object store and calculate md5 (only for objects that used multipart upload)
-            remove_status=subprocess.call(["rm", fileName])
-            key = bucket.get_key(fileName)
-            key.get_contents_to_filename(fileName)
-            s3FileMd5 = generate_file_md5(fileName)
-            statinfo = os.stat(fileName)               #### get size of file downloaded from ftp
-            s3Size = statinfo.st_size                  #size_gb = float(size) / (2**30)
-            if md5_ref_dictionary != 0:                       ### Option to check against reference md5
-                ref_md5 = get_value(my_key=fileName, my_dictionary=md5_ref_dictionary)
-                if s3FileMd5 == ref_md5:
-                    ul_md5_check = "md5_PASS"
-                else:
-                    ul_md5_check = "md5_FAIL"
-            else:
-                ref_md5 = "NA"
-                dl_md5_check = "NA"
-            #log_string = fileName + '\t' + ref_md5 + '\t' + str(dlSize) + '\t' + str(dlFileMd5) + '\t' + dl_md5_check + '\t' + str(dlTime) + '\t' + str(s3Size) + '\t' + str(s3FileMd5) + '\t' + ul_md5_check + '\t' + str(ulTime) + '\t' + "File > 4Gb (4*(2^30) bytes), used multipart upload - upload md5 WILL NOT match dl md5" '\n'
-        #else:
-        log_string = fileName + '\t' + ref_md5 + '\t' + str(dlSize) + '\t' + str(dlFileMd5) + '\t' + dl_md5_check + '\t' + str(dlTime) + '\t' + str(s3Size) + '\t' + str(s3FileMd5) + '\t' + ul_md5_check + '\t' + str(ulTime) + '\n'
-        print ("SUB :: Done processing sample ( " + str(sample) + " ) :: " + fileName)
-        LOGFILE.write(log_string)
-        LOGFILE.flush()
-        return wget_status
-    else:
-        remove_status=subprocess.call(["rm", fileName])
-        if remove_status != 0:
-            log_string = fileName + '\t' + " :: download and/or rm failed" + '\n'
-            LOGFILE.write(log_string)
-            LOGFILE.flush()
-            return wget_status
+            dl_md5_check = "NA"
+        #log_string = file_name + '\t' + ref_md5 + '\t' + str(dlSize) + '\t' + str(dlFileMd5) + '\t' + dl_md5_check + '\t' + str(dlTime) + '\t' + str(s3Size) + '\t' + str(s3FileMd5) + '\t' + ul_md5_check + '\t' + str(ulTime) + '\t' + "File > 4Gb (4*(2^30) bytes), used multipart upload - upload md5 WILL NOT match dl md5" '\n'
+    #else:
+    log_string = file_name + '\t' + ref_md5 + '\t' + str(dlSize) + '\t' + str(dlFileMd5) + '\t' + dl_md5_check + '\t' + str(dlTime) + '\t' + str(s3Size) + '\t' + str(s3FileMd5) + '\t' + ul_md5_check + '\t' + str(ulTime) + '\n'
+    print ("SUB :: Done processing sample ( " + str(sample) + " ) :: " + file_name)
+    LOGFILE.write(log_string)
+    LOGFILE.flush()
+    return wget_status
 
-### MAIN ###
 
-#read in compare list if option is specified
-# read in compare list if option is specified
-#     my_md5_ref_dictionary = {}
-#     for line in open(args.md5_ref_dictionary):
-#         (key,val) = line.split('\t')
-#         my_md5_ref_dictionary[key] = val
-# else:
-#     my_md5_ref_dictionary = 0 
-if args.md5_ref_dictionary != 0:
-    my_md5_ref_dictionary = {}
-    with open(args.md5_ref_dictionary) as f:
-        for line in f:
-            line = line.rstrip("\n")
-            (key, val) = line.split('\t')
-            my_md5_ref_dictionary[key] = val
-else:
-    my_md5_ref_dictionary = 0
 
-    
-# heavy lifting 
-LOGFILE = open('./' + args.list + '.ul_log.txt', 'w+')
-LOGFILE.write('file_name' + '\t' + 'ref_md5' +'\t' + 'local_size(bytes)' + '\t' + 'local_md5' + '\t' + 'local_md5_check' + '\t' + 'dl_time(s)' + '\t' + 's3_size(bytes)' + '\t' + 's3_md5' + '\t' + 's3_md5_check' + '\t' + 'ul_time(s)' + '\n')
-LOGFILE.flush()
-sample=0
-
-with open(args.list) as f:
-    for my_line in f:
-        sample += 1
-        splitLine = my_line.split("/")
-        my_fileName = splitLine[ len(splitLine) - 1 ]
-        my_fileName = my_fileName.rstrip("\n")
-        print ("MAIN :: Processing sample ( " + str(sample) + " ) :: " + my_fileName)
-        ftp_status=1
-        my_attempt=0
-        if my_attempt <= args.retry:
-            if ftp_status != 0:
-                my_attempt += 1
-                if args.debug == True:
-                    print("MAIN :: Attempt " + str(my_attempt))
-                    print("MAIN :: Bucket_name: " + args.bucket_name)
-                time.sleep(1)
-                print("MAIN :: STARTING download and upload attempt ( " + str(my_attempt) + " ) for " + my_fileName)
-                ftp_status=ftp_dl(line=my_line, fileName=my_fileName, access_key=args.access_key, secret_key=args.secret_key, bucket_name=args.bucket_name, md5_ref_dictionary=my_md5_ref_dictionary, gateway=args.gateway, proxy=args.proxy, debug=args.debug)
-                if ftp_status == 0:
-                    print("MAIN :: " + my_fileName + " download and upload FINISHED on attempt ( " + str(my_attempt) + " )")
-                if args.debug==True:
-                    print( "MAIN :: FTP_STATUS: " + str(ftp_status) )
-                if my_attempt == args.retry:
-                    if ftp_status != 0:
-                        print("MAIN :: final download attempt ( " + str(my_attempt) + " ) FAILED")
-            else:
-                print("MAIN :: " + my_fileName + "download and upload FINISHED on attempt ( " + str(my_attempt) + " )")
-
+if __name__ == '__main__':
+    run()
