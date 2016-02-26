@@ -31,10 +31,12 @@ from generate_file_md5 import generate_file_md5
 def run():
     parser = argparse.ArgumentParser(description='Simple script to perform a boto download')
     parser.add_argument('-l','--list', help='file with list of ftp addresses', required=True, default="test")
-    parser.add_argument('-a','--access_key', help='access key')
-    parser.add_argument('-s','--secret_key', help='secret key')
+    parser.add_argument('-a','--access_key', help='access key', required=True)
+    parser.add_argument('-s','--secret_key', help='secret key', required=True)
     parser.add_argument('-g','--gateway', help='s3 host/gateway', default='griffin-objstore.opensciencedatacloud.org')
+    parser.add_argument('-f','--caling_format', help='calling format', default='boto.s3.connection.OrdinaryCallingFormat()')
     parser.add_argument('-b','--bucket_name', help='bucket name', default='1000_genome_exome')
+    parser.add_argument('-c','--credentials', help='credentials file for multipart upload: access_key, secret_key', required=True)
     parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
     parser.add_argument('-k', '--md5_ref_dictionary', help='provide a list ( name \t md5 ) to compare against', default=0)
     parser.add_argument('-p', '--proxy', action="store_true", help='run using \"with_proxy\"')
@@ -44,13 +46,6 @@ def run():
     if args.proxy:
         os.environ['http_proxy'] = 'http://cloud-proxy'
         os.environ['https_proxy'] = 'http://cloud-proxy'
-
-    # optional, you can also put secrets in {HOME}/aws/.credentials
-    if args.access_key:
-        os.environ['AWS_ACCESS_KEY_ID'] = args.access_key
-    if args.secret_key:
-        os.environ['AWS_SECRET_ACCESS_KEY'] = args.secret_key
-
     ### MAIN ###
 
     #read in compare list if option is specified
@@ -101,7 +96,7 @@ def run():
                     if ftp_status == 0:
                         dl_md5_check = check_md5_and_size(file_name, my_md5_ref_dictionary)
                         if dl_md5_check == "md5_PASS":
-                            upload_file(file_name, bucket_name, args.gateway, debug=args.debug)
+                            upload_file(file_name, bucket_name, args)
 
                     return
 
@@ -176,14 +171,52 @@ def check_md5_and_size(file_name, md5_ref_dictionary):
     return dl_md5_check
 
 
-def upload_file(file_name, bucket_name, gateway, debug=True):
-    print ("SUB :: uploading :: " + file_name)            #### upload to s4
+def upload_file(file_name, bucket_name, args):
+    print ("SUB :: uploading :: " + file_name)            #### upload to s3
     tic = time.time()
-    key_name = os.path.basename(file_name)
-    status = subprocess.call(['aws', 's3', 'cp', file_name, 's3://{}/{}'.format(bucket_name, key_name), '--endpoint-url', 'https://'+gateway], env=os.environ)
+    #con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, host=gateway, calling_format=boto.s3.connection.OrdinaryCallingFormat()) # worked on Sullivan
+    con = boto.connect_s3(aws_access_key_id=args.access_key, aws_secret_access_key=args.secret_key, 
+        is_secure=True, host=args.gateway, calling_format=boto.s3.connection.OrdinaryCallingFormat()) # for Griffin
+    if debug == True:
+        print( "SUB :: Bucket_name :: " + bucket_name )
+    if dlSize > 4*(2**30): # use multipart upload for anything larger than 4Gb 
+        #upload_string = "multipart_upload.py" + " -a " + args.access_key + " -s " + args.secret_key + " -b " args.bucket_name + " -k " + file_name + " < " + file_name 
+        #os.system(upload_string)
+        GIG = 2**30   ######### Adapted from Mark's multipart_upload.py
+
+        mp = con.get_bucket(bucket_name).initiate_multipart_upload(file_name)
+
+        i = 0
+        while True:
+            i += 1
+
+            if debug==True:
+                print("SUB :: multipart upload part ( " + str(i) + " ) for " + file_name)                
+            ramdisk = mmap.mmap(-1, GIG)
+            ramdisk.write(sys.stdin.read(GIG))
     
+            size = ramdisk.tell()
+            if not size:
+                break
+    
+            ramdisk.seek(0)
+            #logging.ingo('Uploading chunk {}'.format(i))
+    
+            try: mp.upload_part_from_file(ramdisk, part_num=i, size=size)
+            except Exception as err:
+                #logging.error('Failed writing part - cancelling multipart.')
+                mp.cancel_upload()
+                raise
+
+        #logging.info('Completing multipart.')
+        mp.complete_upload()
+
+    else:
+        print("SUB :: single part upload for " + file_name)
+        bucket=con.get_bucket(bucket_name)
+        key=bucket.new_key(file_name)
+        key.set_contents_from_file_name(file_name)
     ulTime = time.time() - tic
-    return status, ulTime
 
 def cleanup():
     print ("SUB :: delete local copy of " + file_name) ### remove local copy of file
