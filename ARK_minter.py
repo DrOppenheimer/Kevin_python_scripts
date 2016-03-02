@@ -20,6 +20,8 @@ args = parser.parse_args()
 # Create a coupe variables
 index_endpoint = args.endpoint +'index/'
 alias_endpoint = args.endpoint + 'alias/'
+auth = (args.user, args.password)
+
 
 # start log
 log = args.list +'.ARK_minter.log'
@@ -51,7 +53,7 @@ with open(args.list) as f:
             # parse the input line
             splitline = my_line.split('\t')
             file_name = splitline[ 0 ]
-            file_size = splitline[ 1 ]
+            file_size = int(splitline[ 1 ])
             file_md5 = splitline[2]
             file_urls = []
             for i in range(3, len(splitline), 1):
@@ -62,7 +64,10 @@ with open(args.list) as f:
         
             # create index
             data={'form':'object', 'size':file_size, 'urls':file_urls, 'hashes':{'md5':file_md5}}
-            #output=requests.post(index_endpoint, json=data, auth=auth).json()
+            output=requests.post(index_endpoint, json=data, auth=auth).json()
+            if args.debug==True:
+                print "INDEX OUTPUT:"
+                print output
 
             # create alias
             data = {'size':file_size, 'hashes':{'md5':file_md5}, 'release': 'private', 'keeper_authority': args.keeper, 'host_authority':args.host}
@@ -70,7 +75,12 @@ with open(args.list) as f:
             ark = args.ark + my_uuid
             ark_url = alias_endpoint + ark
             #output = requests.put(alias_endpoint+ark, json=data, auth=auth, proxies=proxies).json()
-
+            output = requests.put(alias_endpoint+ark, json=data, auth=auth).json()
+            if args.debug==True:
+                print "ALIAS OUTPUT:"
+                print output
+                
+            
             # print to log and stdout when a record is created
             if args.debug==True:
                 print "LINE         :: " + my_line

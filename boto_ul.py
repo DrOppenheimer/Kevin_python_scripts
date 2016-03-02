@@ -38,7 +38,7 @@ else:
     aws_access_key_id = args.access_key,
     aws_secret_access_key = args.secret_key,
     host = args.gateway,
-    #is_secure=False, # uncomment if you are not using ssl
+    is_secure=True, # uncomment if you are not using ssl
     calling_format = boto.s3.connection.OrdinaryCallingFormat(),
     )
 
