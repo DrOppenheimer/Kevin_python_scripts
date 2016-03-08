@@ -1,7 +1,6 @@
 import sys
 import json
 import mmap
-#import logging
 import argparse
 import os
 import time
@@ -15,7 +14,7 @@ from generate_file_md5 import generate_file_md5
 
 from ftp_2_s3 import upload_file
 from ftp_2_s3 import check_uploaded_file
-
+from ftp_2_s3 import check_uploaded_file
 
 
 
@@ -29,3 +28,6 @@ status, upload_time = upload_file(my_file_name, args.bucket_name, args.gateway, 
                                 cleanup_files(my_file_name)
                                 final_status['succeed_files'].append(my_file_name)
                                 break
+
+
+                            get_stats = get_stats_func(stats)
