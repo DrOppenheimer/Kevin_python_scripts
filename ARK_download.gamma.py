@@ -101,7 +101,7 @@ def download_without_parcel(urls, pattern, debug):
             exit(0)
 
 # SUB to download with parcel            
-def download_with_parcel(urls, pattern, remote-parcel-ip, parcel-port, debug)
+def download_with_parcel(urls, pattern, remote-parcel-ip, parcel-port, debug):
     for x in urls:
     if re.match( ("^" + pattern), x ):
         download_url = x
