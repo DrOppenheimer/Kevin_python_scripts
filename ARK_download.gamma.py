@@ -88,8 +88,8 @@ def download_without_parcel(urls, pattern, debug):
         except NameError:
             print "The urls (below) do not start with pattern :: " + str(args.pattern)
             for i in urls:
-            print("\t" + i)
-            exit("Please try again with a valid pattern from the urls(s) above")
+                print("\t" + i)
+                exit("Please try again with a valid pattern from the urls(s) above")
         else:
             # get the filename from the url
             filename = basename(download_url).rstrip()
