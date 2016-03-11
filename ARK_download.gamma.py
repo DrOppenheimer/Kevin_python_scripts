@@ -25,7 +25,7 @@ parser = argparse.ArgumentParser(description='Script to display contents of ARK 
 parser.add_argument('-a','--ark', help='ark id', default='https://signpost.opensciencedatacloud.org/alias/ark:/31807/DC3-fd206d7f-af73-4095-8348-00cf3c8e5242')
 parser.add_argument('-d','--download', help='option to download data that the ARK points to', action="store_true")
 parser.add_argument('-p','--pattern', help='pattern from beginning of url to match if there is more than one url in the record', default='ftp')
-parser.add_argument('-up','--useparcel', help='use parcel for the download (assumes parcel is installed on VM)", action="stor_true')
+parser.add_argument('-up','--useparcel', action="store_true", help='use parcel for the download (assumes parcel is installed on VM)", action="stor_true')
 parser.add_argument('-rp','--remoteparcelip', help='remote parcel ip', default='172.16.128.7')
 parser.add_argument('-pp', '--parcelport', help='parcel port', default='9000')
 parser.add_argument('-b','--debug', action="store_true", help='run in debug mode')
