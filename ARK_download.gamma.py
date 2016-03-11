@@ -103,29 +103,29 @@ def download_without_parcel(urls, pattern, debug):
 # SUB to download with parcel            
 def download_with_parcel(urls, pattern, remoteparcelip, parcelport, debug):
     for x in urls:
-    if re.match( ("^" + pattern), x ):
-        download_url = x
-        # make sure that there is a pattern matching url before downloading
-        try:
-            download_url
-        except NameError:
-            print "The urls (below) do not start with pattern :: " + str(args.pattern)
-            for i in urls:
-            print("\t" + i)
-            exit("Please try again with a valid pattern from the urls(s) above")
-        else:
-            # get the filename from the url
-            #filename = basename(download_url).rstrip()
-            url_string = download_url.rstrip()
-            url_vector = url_string.split('/')
-            filename = url_vector[ len(url_vector) - 1 ]
-            bucketname = url_vector[ len(url_vector) - 2 ]
-            # create a string to perform the download
-            download_string = "curl -k -O  https://" + str(remoteparcelip) + ":" + str(parcelport) + "/" + str(bucketname) + "/" + str(filename)
-            # download the file
-            os.system(download_string)
-            print("Download of " + str(filename) + " is complete")
-            exit(0)
+        if re.match( ("^" + pattern), x ):
+            download_url = x
+            # make sure that there is a pattern matching url before downloading
+            try:
+                download_url
+            except NameError:
+                print "The urls (below) do not start with pattern :: " + str(args.pattern)
+                for i in urls:
+                print("\t" + i)
+                exit("Please try again with a valid pattern from the urls(s) above")
+            else:
+                # get the filename from the url
+                #filename = basename(download_url).rstrip()
+                url_string = download_url.rstrip()
+                url_vector = url_string.split('/')
+                filename = url_vector[ len(url_vector) - 1 ]
+                bucketname = url_vector[ len(url_vector) - 2 ]
+                # create a string to perform the download
+                download_string = "curl -k -O  https://" + str(remoteparcelip) + ":" + str(parcelport) + "/" + str(bucketname) + "/" + str(filename)
+                # download the file
+                os.system(download_string)
+                print("Download of " + str(filename) + " is complete")
+                exit(0)
             
 if __name__ == '__main__':
     run()
