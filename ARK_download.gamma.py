@@ -45,7 +45,8 @@ def run():
     
     # remove any trailing newline characters
     my_ark = args.ark.rstrip()
-
+    print(my_ark)
+    
     # download the ARK record
     #response = urllib.urlopen(my_ark)
     response = requests.get(my_ark)
