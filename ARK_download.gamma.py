@@ -78,7 +78,7 @@ def run():
         print json.dumps(my_json, indent=4, sort_keys=True)
 
 # SUB to download without parcel
-def download_without_parcel(urls, pattern, debug)           
+def download_without_parcel(urls, pattern, debug):           
   for x in urls:
     if re.match( ("^" + pattern), x ):
         download_url = x
