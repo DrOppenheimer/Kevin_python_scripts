@@ -25,18 +25,18 @@ parser = argparse.ArgumentParser(description='Script to display contents of ARK 
 parser.add_argument('-a','--ark', help='ark id', default='https://signpost.opensciencedatacloud.org/alias/ark:/31807/DC3-fd206d7f-af73-4095-8348-00cf3c8e5242')
 parser.add_argument('-d','--download', help='option to download data that the ARK points to', action="store_true")
 parser.add_argument('-p','--pattern', help='pattern from beginning of url to match if there is more than one url in the record', default='ftp')
-parser.add_argument('-up','--use-parcel', help='use parcel for the download (assumes parcel is installed on VM)", action="stor_true')
-parser.add_argument('-rp','--remote-parcel-ip', help='remote parcel ip', default='172.16.128.7')
-parser.add_argument('-pp', '--parcel-port', help='parcel port', default='9000')
+parser.add_argument('-up','--useparcel', help='use parcel for the download (assumes parcel is installed on VM)", action="stor_true')
+parser.add_argument('-rp','--remoteparcelip', help='remote parcel ip', default='172.16.128.7')
+parser.add_argument('-pp', '--parcelport', help='parcel port', default='9000')
 parser.add_argument('-b','--debug', action="store_true", help='run in debug mode')
 args = parser.parse_args()
 
 # MAIN
 def run():
     # start parcel service if that option is selected, exit if fail
-    if args.use-parcel==True:
-        tcp2udt-command = 'parcel-tcp2udt ' + str(args.remote-parcel-ip) + ":" + str(args.parcel-port) # e.g. 'parcel-tcp2udt 192.170.232.76:9000'
-        udt2tcp-command = 'parcel-udt2tcp localhost:' + str(args.parcel-portargs.parcel-port) # e.g. 'parcel-udt2tcp localhost:9000'
+    if args.useparcel==True:
+        tcp2udt-command = 'parcel-tcp2udt ' + str(args.remoteparcelip) + ":" + str(args.parcelport) # e.g. 'parcel-tcp2udt 192.170.232.76:9000'
+        udt2tcp-command = 'parcel-udt2tcp localhost:' + str(args.parcelport) # e.g. 'parcel-udt2tcp localhost:9000'
         tcp2udt-status = os.spawnl(os.P_DETACH, tcp2udt-command)
         udt2tcp-status = os.spawnl(os.P_DETACH, udt2tcp-command)
         if tcp2udt-status != 0 or udt2tcp-status != 0:
@@ -66,8 +66,8 @@ def run():
     # check to see if option is to read or download
     if args.download==True:
         # download with parcel
-        if args.use-parcel==True:
-            download_with_parcel(urls=json_urls, pattern=args.pattern, remoteparcelip=args.remote-parcel-ip, parcel-port=args.parcel-port, debug=args.debug)
+        if args.useparcel==True:
+            download_with_parcel(urls=json_urls, pattern=args.pattern, remoteparcelip=args.remoteparcelip, parcelport=args.parcelport, debug=args.debug)
         # download without parcel    
         else:
             download_without_parcel(urls=json_urls, pattern=args.pattern, debug=args.debug)
@@ -101,7 +101,7 @@ def download_without_parcel(urls, pattern, debug):
             exit(0)
 
 # SUB to download with parcel            
-def download_with_parcel(urls, pattern, remoteparcelip, parcel-port, debug):
+def download_with_parcel(urls, pattern, remoteparcelip, parcelport, debug):
     for x in urls:
     if re.match( ("^" + pattern), x ):
         download_url = x
@@ -121,7 +121,7 @@ def download_with_parcel(urls, pattern, remoteparcelip, parcel-port, debug):
             filename = url_vector[ len(url_vector) - 1 ]
             bucketname = url_vector[ len(url_vector) - 2 ]
             # create a string to perform the download
-            download_string = "curl -k -O  https://" + str(remoteparcelip) + ":" + str(parcel-port) + "/" + str(bucketname) + "/" + str(filename)
+            download_string = "curl -k -O  https://" + str(remoteparcelip) + ":" + str(parcelport) + "/" + str(bucketname) + "/" + str(filename)
             # download the file
             os.system(download_string)
             print("Download of " + str(filename) + " is complete")
