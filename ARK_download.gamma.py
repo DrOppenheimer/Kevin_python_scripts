@@ -49,6 +49,7 @@ def run():
     # download the ARK record
     #response = urllib.urlopen(my_ark)
     response = requests.get(my_ark)
+    print(response)
     #my_json = json.load(response)
     my_json = response.json()
     
