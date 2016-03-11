@@ -35,11 +35,11 @@ args = parser.parse_args()
 def run():
     # start parcel service if that option is selected, exit if fail
     if args.useparcel==True:
-        tcp2udt-command = 'parcel-tcp2udt ' + str(args.remoteparcelip) + ":" + str(args.parcelport) # e.g. 'parcel-tcp2udt 192.170.232.76:9000'
-        udt2tcp-command = 'parcel-udt2tcp localhost:' + str(args.parcelport) # e.g. 'parcel-udt2tcp localhost:9000'
-        tcp2udt-status = os.spawnl(os.P_DETACH, tcp2udt-command)
-        udt2tcp-status = os.spawnl(os.P_DETACH, udt2tcp-command)
-        if tcp2udt-status != 0 or udt2tcp-status != 0:
+        tcp2udt_command = 'parcel-tcp2udt ' + str(args.remoteparcelip) + ":" + str(args.parcelport) # e.g. 'parcel-tcp2udt 192.170.232.76:9000'
+        udt2tcp_command = 'parcel-udt2tcp localhost:' + str(args.parcelport) # e.g. 'parcel-udt2tcp localhost:9000'
+        tcp2udt_status = os.spawnl(os.P_DETACH, tcp2udt_command)
+        udt2tcp_status = os.spawnl(os.P_DETACH, udt2tcp_command)
+        if tcp2udt_status != 0 or udt2tcp_status != 0:
             quit('parcel is not installed or configured properly')
         os.system('sleep 5') # sleep for 5 seconds  -- is this overkill?
     
