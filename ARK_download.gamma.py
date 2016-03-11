@@ -67,7 +67,7 @@ def run():
     if args.download==True:
         # download with parcel
         if args.use-parcel==True:
-            download_with_parcel(urls=json_urls, pattern=args.pattern, remote-parcel-ip=args.remote-parcel-ip, parcel-port=args.parcel-port, debug=args.debug)
+            download_with_parcel(urls=json_urls, pattern=args.pattern, remoteparcelip=args.remote-parcel-ip, parcel-port=args.parcel-port, debug=args.debug)
         # download without parcel    
         else:
             download_without_parcel(urls=json_urls, pattern=args.pattern, debug=args.debug)
@@ -101,7 +101,7 @@ def download_without_parcel(urls, pattern, debug):
             exit(0)
 
 # SUB to download with parcel            
-def download_with_parcel(urls, pattern, remote-parcel-ip, parcel-port, debug):
+def download_with_parcel(urls, pattern, remoteparcelip, parcel-port, debug):
     for x in urls:
     if re.match( ("^" + pattern), x ):
         download_url = x
@@ -121,7 +121,7 @@ def download_with_parcel(urls, pattern, remote-parcel-ip, parcel-port, debug):
             filename = url_vector[ len(url_vector) - 1 ]
             bucketname = url_vector[ len(url_vector) - 2 ]
             # create a string to perform the download
-            download_string = "curl -k -O  https://" + str(remote-parcel-ip) + ":" + str(parcel-port) + "/" + str(bucketname) + "/" + str(filename)
+            download_string = "curl -k -O  https://" + str(remoteparcelip) + ":" + str(parcel-port) + "/" + str(bucketname) + "/" + str(filename)
             # download the file
             os.system(download_string)
             print("Download of " + str(filename) + " is complete")
