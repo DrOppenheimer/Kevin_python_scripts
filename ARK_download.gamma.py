@@ -42,7 +42,7 @@ def run():
         tcp2udt_status = os.spawnl(os.P_NOWAIT, tcp2udt_command)
         udt2tcp_status = os.spawnl(os.P_NOWAIT, udt2tcp_command)
         if tcp2udt_status != 0 or udt2tcp_status != 0:
-            quit('parcel is not installed or configured properly')
+            quit('parcel is not installed or configured properly\ntcp2udt_status: $tcp2udt_status\nudt2tcp_status: $udt2tcp_status')
         os.system('sleep 5') # sleep for 5 seconds  -- is this overkill?
     
     # remove any trailing newline characters
