@@ -45,7 +45,7 @@ def run():
             quit('parcel is not installed or configured properly')
         else:
             print('Parcel is running on the following ports: \ntcp2udt_status: ' + str(tcp2udt_status) + '\n' + 'nudt2tcp_status: ' + str(udt2tcp_status))
-        os.system('sleep 5') # sleep for 5 seconds  -- is this overkill?
+        os.system('sleep 1') # sleep for 5 seconds  -- is this overkill?
     
     # remove any trailing newline characters
     my_ark = args.ark.rstrip()
