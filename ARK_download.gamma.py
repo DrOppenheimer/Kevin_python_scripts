@@ -41,9 +41,10 @@ def run():
         #udt2tcp_status = os.spawnl(os.P_DETACH, udt2tcp_command)
         tcp2udt_status = os.spawnl(os.P_NOWAIT, tcp2udt_command)
         udt2tcp_status = os.spawnl(os.P_NOWAIT, udt2tcp_command)
-        if tcp2udt_status != 0 or udt2tcp_status != 0:
-            print('tcp2udt_status: ' + str(tcp2udt_status) + '\n' + 'nudt2tcp_status: ' + str(udt2tcp_status))
+        if tcp2udt_status == 1 or udt2tcp_status == 1:
             quit('parcel is not installed or configured properly')
+        else:
+            print('Parcel is running on the following ports: \ntcp2udt_status: ' + str(tcp2udt_status) + '\n' + 'nudt2tcp_status: ' + str(udt2tcp_status))
         os.system('sleep 5') # sleep for 5 seconds  -- is this overkill?
     
     # remove any trailing newline characters
