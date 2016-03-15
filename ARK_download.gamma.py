@@ -98,8 +98,7 @@ def download_without_parcel(urls, pattern, debug):
             # get the filename from the url
             filename = basename(download_url).rstrip()
             # create a string to perform the download
-            download_string = "curl " + str(download_url) + " -O "
-            
+            download_string = "curl -O " + str(download_url)
             if args.debug==True:
                 print "Performing this download:\n"
                 print download_string 
