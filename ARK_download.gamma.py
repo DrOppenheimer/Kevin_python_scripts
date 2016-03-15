@@ -131,8 +131,8 @@ def download_with_parcel(urls, pattern, remoteparcelip, parcelport, debug):
                 # create a string to perform the download
                 download_string = "curl -k -O  https://" + str(remoteparcelip) + ":" + str(parcelport) + "/" + str(bucketname) + "/" + str(filename)
                 if args.debug==True:
-                print "Performing this download:\n"
-                print download_string 
+                    print "Performing this download:\n"
+                    print download_string 
                 # download the file
                 os.system(download_string)
                 print("Download of " + str(filename) + " is complete")
