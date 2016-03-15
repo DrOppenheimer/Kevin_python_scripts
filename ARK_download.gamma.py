@@ -128,7 +128,7 @@ def download_with_parcel(urls, pattern, remoteparcelip, parcelport, debug):
                 filename = url_vector[ len(url_vector) - 1 ]
                 bucketname = url_vector[ len(url_vector) - 2 ]
                 # create a string to perform the download
-                download_string = "curl -k -O  https://" + str(remoteparcelip) + ":" + str(parcelport) + "/" + str(bucketname) + "/" + str(filename)
+                download_string = "curl -k -O https://" + str(remoteparcelip) + ":" + str(parcelport) + "/" + str(bucketname) + "/" + str(filename)
                 if args.debug==True:
                     print "\nPerforming this download:"
                     print download_string + "\n"
