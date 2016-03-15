@@ -99,8 +99,12 @@ def download_without_parcel(urls, pattern, debug):
             filename = basename(download_url).rstrip()
             # create a string to perform the download
             download_string = "curl " + str(download_url) + " -O "
-            # download the file
+            
+            if args.debug==True:
+                print "Performing this download:\n"
+                print download_string 
             os.system(download_string)
+            # download the file
             print("Download of " + str(filename) + " is complete")
             exit(0)
 
@@ -126,6 +130,9 @@ def download_with_parcel(urls, pattern, remoteparcelip, parcelport, debug):
                 bucketname = url_vector[ len(url_vector) - 2 ]
                 # create a string to perform the download
                 download_string = "curl -k -O  https://" + str(remoteparcelip) + ":" + str(parcelport) + "/" + str(bucketname) + "/" + str(filename)
+                if args.debug==True:
+                print "Performing this download:\n"
+                print download_string 
                 # download the file
                 os.system(download_string)
                 print("Download of " + str(filename) + " is complete")
