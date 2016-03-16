@@ -35,7 +35,6 @@ args = parser.parse_args()
 def run():
     # check to make sure that parcel local (tcp2udt) is running
     if args.useparcel==True:
-        
         # exit is multiplied by 256, so is a 1 (http://stackoverflow.com/questions/3736320/executing-shell-script-with-system-returns-256-what-does-that-mean)
         # local (tcp2udt)
         #tcp2udt_status=os.system('ps -a | grep parcel-tcp2udt')
@@ -44,40 +43,33 @@ def run():
             print "Parcel tcp2udt (local proxy) is not running -- trying to start it now"
             tcp2udt_command = 'parcel-tcp2udt ' + str(args.remoteparcelip) + ":" + str(args.parcelport) # e.g. 'parcel-tcp2udt 192.170.232.76:9000'
             tcp2udt_status = os.spawnl(os.P_NOWAIT, tcp2udt_command)
-
         # # server (udt2tcp)
         # udt2tcp_status=os.system('ps -a | grep parcel-udt2tcp')
         # if udt2tcp_status==256:
         #     print "Parcel udt2tcp (server proxy) is not running -- trying to start it now"    
         #     udt2tcp_command = 'parcel-udt2tcp localhost:' + str(args.parcelport) # e.g. 'parcel-udt2tcp localhost:9000'
         #     udt2tcp_status = os.spawnl(os.P_NOWAIT, udt2tcp_command)
-
         if tcp2udt_status == 1 or udt2tcp_status == 1:
             quit('Parcel is not running. It may not be installed or could be configured improperly')
         else:
             print('Parcel is running on the following ports: \ntcp2udt_status: ' + os.system('ps -a | grep parcel-tcp2udt') + '\n' + 'nudt2tcp_status: ' + os.system('ps -a | grep parcel-udt2tcp'))
         os.system('sleep 1') # sleep for 5 seconds  -- is this overkill?
-    
     # remove any trailing newline characters
     my_ark = args.ark.rstrip()
     print(my_ark)
-    
     # download the ARK record
     #response = urllib.urlopen(my_ark)
     response = requests.get(my_ark)
     print(response)
     #my_json = json.load(response)
     my_json = response.json()
-    
     # get the urls
     json_urls = my_json["urls"]
-
     # make sure that there are urls
     try:
       json_urls
     except NameError:
         exit("There are no urls in this record")
-    
     # check to see if option is to read or download
     if args.download==True:
         # download with parcel
