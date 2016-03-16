@@ -33,18 +33,28 @@ args = parser.parse_args()
 
 # MAIN
 def run():
-    # start parcel service if that option is selected, exit if fail
+    # check to make sure that parcel local (tcp2udt) is running
     if args.useparcel==True:
-        tcp2udt_command = 'parcel-tcp2udt ' + str(args.remoteparcelip) + ":" + str(args.parcelport) # e.g. 'parcel-tcp2udt 192.170.232.76:9000'
-        udt2tcp_command = 'parcel-udt2tcp localhost:' + str(args.parcelport) # e.g. 'parcel-udt2tcp localhost:9000'
-        #tcp2udt_status = os.spawnl(os.P_DETACH, tcp2udt_command)
-        #udt2tcp_status = os.spawnl(os.P_DETACH, udt2tcp_command)
-        tcp2udt_status = os.spawnl(os.P_NOWAIT, tcp2udt_command)
-        udt2tcp_status = os.spawnl(os.P_NOWAIT, udt2tcp_command)
+        
+        # exit is multiplied by 256, so is a 1 (http://stackoverflow.com/questions/3736320/executing-shell-script-with-system-returns-256-what-does-that-mean)
+        # local (tcp2udt)
+        tcp2udt_status=os.system('ps -a | grep parcel-tcp2udt')
+        if tcp2udt_status==256:
+            print "Parcel tcp2udt (local proxy) is not running -- trying to start it now"
+            tcp2udt_command = 'parcel-tcp2udt ' + str(args.remoteparcelip) + ":" + str(args.parcelport) # e.g. 'parcel-tcp2udt 192.170.232.76:9000'
+            tcp2udt_status = os.spawnl(os.P_NOWAIT, tcp2udt_command)
+
+        # server (udt2tcp)
+        udt2tcp_status=os.system('ps -a | grep parcel-udt2tcp')
+        if udt2tcp_status==256:
+            print "Parcel udt2tcp (server proxy) is not running -- trying to start it now"    
+            udt2tcp_command = 'parcel-udt2tcp localhost:' + str(args.parcelport) # e.g. 'parcel-udt2tcp localhost:9000'
+            udt2tcp_status = os.spawnl(os.P_NOWAIT, udt2tcp_command)
+
         if tcp2udt_status == 1 or udt2tcp_status == 1:
-            quit('parcel is not installed or configured properly')
+            quit('Parcel is not running. It may not be installed or could be configured improperly')
         else:
-            print('Parcel is running on the following ports: \ntcp2udt_status: ' + str(tcp2udt_status) + '\n' + 'nudt2tcp_status: ' + str(udt2tcp_status))
+            print('Parcel is running on the following ports: \ntcp2udt_status: ' + os.system('ps -a | grep parcel-tcp2udt') + '\n' + 'nudt2tcp_status: ' + os.system('ps -a | grep parcel-udt2tcp'))
         os.system('sleep 1') # sleep for 5 seconds  -- is this overkill?
     
     # remove any trailing newline characters
@@ -98,7 +108,8 @@ def download_without_parcel(urls, pattern, debug):
             # get the filename from the url
             filename = basename(download_url).rstrip()
             # create a string to perform the download
-            download_string = "curl -O " + str(download_url)
+            # example that works: curl -k -O --noproxy * https://172.16.128.7:9000/1000_genome_exome/HG00103.alt_bwamem_GRCh38DH.20150826.GBR.exome.cram
+            download_string = "curl -k -O --noproxy * " + str(download_url)
             if args.debug==True:
                 print "\nPerforming this download:"
                 print download_string + "\n" 
