@@ -107,9 +107,11 @@ def download_without_parcel(urls, pattern, debug):
         else:
             # get the filename from the url
             filename = basename(download_url).rstrip()
-            # create a string to perform the download
-            # example that works: curl -k -O --noproxy * https://172.16.128.7:9000/1000_genome_exome/HG00103.alt_bwamem_GRCh38DH.20150826.GBR.exome.cram
-            download_string = "curl -k -O --noproxy * " + str(download_url)
+            # create a string to perform the download          
+            # example that worked once: curl -k -O --noproxy * https://172.16.128.7:9000/1000_genome_exome/HG00103.alt_bwamem_GRCh38DH.20150826.GBR.exome.cram
+            # then switched to this:    curl -O -k --noproxy 172.16.128.7 https://172.16.128.7:9000/1000_genome_exome/HG00103.alt_bwamem_GRCh38DH.20150826.GBR.exome.cram
+            my_ip=download_url.split('/')[2].split(':')[0]
+            download_string = "curl -O -k --noproxy " + str(my_ip) + ' ' + str(download_url)            
             if args.debug==True:
                 print "\nPerforming this download:"
                 print download_string + "\n" 
