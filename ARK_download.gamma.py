@@ -37,8 +37,9 @@ def run():
     if args.useparcel==True:
         # exit is multiplied by 256, so is a 1 (http://stackoverflow.com/questions/3736320/executing-shell-script-with-system-returns-256-what-does-that-mean)
         # local (tcp2udt)
-        #tcp2udt_status=os.system('ps -a | grep parcel-tcp2udt')
-        tcp2udt_status=os.system('sudo lsof -i :9000')
+        tcp2udt_status=os.system('ps -e | grep parcel-tcp2udt')
+        udt2tcp_status=os.system('ps -e | grep parcel-udt2tcp')
+        #tcp2udt_status=os.system('sudo lsof -i :9000')
         if tcp2udt_status==256:
             print "Parcel tcp2udt (local proxy) is not running -- trying to start it now"
             tcp2udt_command = 'parcel-tcp2udt ' + str(args.remoteparcelip) + ":" + str(args.parcelport) # e.g. 'parcel-tcp2udt 192.170.232.76:9000'
@@ -49,10 +50,10 @@ def run():
         #     print "Parcel udt2tcp (server proxy) is not running -- trying to start it now"    
         #     udt2tcp_command = 'parcel-udt2tcp localhost:' + str(args.parcelport) # e.g. 'parcel-udt2tcp localhost:9000'
         #     udt2tcp_status = os.spawnl(os.P_NOWAIT, udt2tcp_command)
-        if tcp2udt_status == 1 or udt2tcp_status == 1:
+        if tcp2udt_status == 1:# or udt2tcp_status == 1:
             quit('Parcel is not running. It may not be installed or could be configured improperly')
         else:
-            print('Parcel is running on the following ports: \ntcp2udt_status: ' + os.system('ps -a | grep parcel-tcp2udt') + '\n' + 'nudt2tcp_status: ' + os.system('ps -a | grep parcel-udt2tcp'))
+            print('Parcel is running on the following ports: \ntcp2udt_status: ' + os.system('ps -e | grep parcel-tcp2udt') + '\n' + 'nudt2tcp_status: ' + os.system('ps -e | grep parcel-udt2tcp'))
         os.system('sleep 1') # sleep for 5 seconds  -- is this overkill?
     # remove any trailing newline characters
     my_ark = args.ark.rstrip()
