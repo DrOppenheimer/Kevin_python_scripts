@@ -125,7 +125,7 @@ def download_without_parcel(urls, pattern, debug):
             # get the filename from the url
             filename = basename(download_url).rstrip()
             download_string = "curl -O -k " + str(download_url)            
-            if args.debug==True:
+            if debug==True:
                 print "\nPerforming this download:"
                 print download_string + "\n" 
             os.system(download_string)
@@ -161,7 +161,7 @@ def download_with_parcel(urls, pattern, remoteparcelip, parcelport, debug):
                 # create a string to perform the download
                 download_string = "curl -O -k --noproxy " + str(remoteparcelip) + ' ' + "https://" + str(remoteparcelip) + ":" + str(parcelport) + "/" + str(bucketname) + "/" + str(filename)
                 #download_string = "curl -k -O https://" + str(remoteparcelip) + ":" + str(parcelport) + "/" + str(bucketname) + "/" + str(filename)
-                if args.debug==True:
+                if debug==True:
                     print "\nPerforming this download:"
                     print download_string + "\n"
                 # download the file
