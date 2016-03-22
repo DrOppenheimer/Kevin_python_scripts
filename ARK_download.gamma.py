@@ -85,6 +85,29 @@ def run():
             print("This is the built in default - you need to use \"-a\" with a valid ARK")
         print json.dumps(my_json, indent=4, sort_keys=True)
 
+# SUB to make sure that parcel ip is same as ip in url -- if not, try download replacing url ip with parcelip
+def check_parcel_url(url, parcelip, parcelport, debug):
+    url = str(url)
+    parcelip = str(parcelip)
+    test = url.find(parcelip)
+    if test == -1:
+        url_vector = url.split('/')
+        num_fields=len(url_vector)
+        if debug==True:
+            print 'num_fields: ' + str(num_fields)
+        new_url_tail=''
+        for i in range (4,num_fields+1):
+            new_url_tail=new_url_tail + '/' + str( url_vector[i-1] )
+            if debug==True:
+                print 'new_url_tail: ' + new_url_tail
+        new_url= str( url_vector[0] ) + '//' + str(parcelip) + ':' + str(parcelport) + new_url_tail
+        print 'The parcelip is not contained in the url for the sample, attempting to fix'
+        print '     changing this url: ' + url
+        print '     to this url      : ' + new_url 
+    else:
+        new_url = url
+    return new_url
+        
 # SUB to download without parcel
 def download_without_parcel(urls, pattern, debug):           
   for x in urls:
@@ -149,28 +172,7 @@ def download_with_parcel(urls, pattern, remoteparcelip, parcelport, debug):
 if __name__ == '__main__':
     run()
 
-# SUB to make sure that parcel ip is same as ip in url -- if not, try download replacing url ip with parcelip
-def check_parcel_url(url, parcelip, parcelport, debug):
-    url = str(url)
-    parcelip = str(parcelip)
-    test = url.find(parcelip)
-    if test == -1:
-        url_vector = url.split('/')
-        num_fields=len(url_vector)
-        if debug==True:
-            print 'num_fields: ' + str(num_fields)
-        new_url_tail=''
-        for i in range (4,num_fields+1):
-            new_url_tail=new_url_tail + '/' + str( url_vector[i-1] )
-            if debug==True:
-                print 'new_url_tail: ' + new_url_tail
-        new_url= str( url_vector[0] ) + '//' + str(parcelip) + ':' + str(parcelport) + new_url_tail
-        print 'The parcelip is not contained in the url for the sample, attempting to fix'
-        print '     changing this url: ' + url
-        print '     to this url      : ' + new_url 
-    else:
-        new_url = url
-    return new_url
+
 
 
 
