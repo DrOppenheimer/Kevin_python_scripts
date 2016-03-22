@@ -53,7 +53,7 @@ def run():
         if tcp2udt_status == 1:# or udt2tcp_status == 1:
             quit('Parcel is not running. It may not be installed or could be configured improperly')
         else:
-            print('Parcel is running on the following ports: \ntcp2udt_status: ' + os.system('ps -e | grep parcel-tcp2udt') + '\n' + 'nudt2tcp_status: ' + os.system('ps -e | grep parcel-udt2tcp'))
+            print('Parcel is running on the following ports: \ntcp2udt_status: ' + str(os.system('ps -e | grep parcel-tcp2udt')) + '\n' + 'udt2tcp_status: ' + str(os.system('ps -e | grep parcel-udt2tcp')))
         os.system('sleep 1') # sleep for 5 seconds  -- is this overkill?
     # remove any trailing newline characters
     my_ark = args.ark.rstrip()
