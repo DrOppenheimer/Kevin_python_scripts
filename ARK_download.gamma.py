@@ -53,7 +53,7 @@ def run():
         if tcp2udt_status == 1:# or udt2tcp_status == 1:
             quit('Parcel is not running. It may not be installed or could be configured improperly')
         else:
-            print('Parcel is running on the following ports: \ntcp2udt_status: ' + str(os.system('ps -e | grep parcel-tcp2udt')) + '\n' + 'udt2tcp_status: ' + str(os.system('ps -e | grep parcel-udt2tcp')))
+            print('Parcel is running ( 0 indicates running, 256 incates error ): \ntcp2udt_status: ' + str(os.system('ps -e | grep parcel-tcp2udt')) + '\n' + 'udt2tcp_status: ' + str(os.system('ps -e | grep parcel-udt2tcp')))
         os.system('sleep 1') # sleep for 5 seconds  -- is this overkill?
     # remove any trailing newline characters
     my_ark = args.ark.rstrip()
@@ -127,6 +127,8 @@ def download_with_parcel(urls, pattern, remoteparcelip, parcelport, debug):
                 # get the filename from the url
                 #filename = basename(download_url).rstrip()
                 url_string = download_url.rstrip()
+                # stick the new function here
+                url_string = check_parcel_url(url_string, remoteparcelip, parcelport, debug)
                 url_vector = url_string.split('/')
                 filename = url_vector[ len(url_vector) - 1 ]
                 # create a string to perform the download          
@@ -146,6 +148,33 @@ def download_with_parcel(urls, pattern, remoteparcelip, parcelport, debug):
             
 if __name__ == '__main__':
     run()
+
+# SUB to make sure that parcel ip is same as ip in url -- if not, try download replacing url ip with parcelip
+def check_parcel_url(url, parcelip, parcelport, debug):
+    url = str(url)
+    parcelip = str(parcelip)
+    test = url.find(parcelip)
+    if test == -1:
+        url_vector = url.split('/')
+        num_fields=len(url_vector)
+        if debug==True:
+            print 'num_fields: ' + str(num_fields)
+        new_url_tail=''
+        for i in range (4,num_fields+1):
+            new_url_tail=new_url_tail + '/' + str( url_vector[i-1] )
+            if debug==True:
+                print 'new_url_tail: ' + new_url_tail
+        new_url= str( url_vector[0] ) + '//' + str(parcelip) + ':' + str(parcelport) + new_url_tail
+        print 'The parcelip is not contained in the url for the sample, attempting to fix'
+        print '     changing this url: ' + url
+        print '     to this url      : ' + new_url 
+    else:
+        new_url = url
+    return new_url
+
+
+
+    
 
 # Example of url,
 # downloaded with 
