@@ -14,7 +14,7 @@
 import sys
 import json
 import mmap
-#import logging
+import logging
 import argparse
 import os
 import time
@@ -22,7 +22,10 @@ import hashlib
 import subprocess
 import boto
 import boto.s3.connection
-import multipart_upload
+try:
+    import multipart_upload # make sure is in PYTHONPATH
+except:
+    print 'multipart_upload did not import -- is the script in PYTHONPATH?'    
 from boto.s3.key import Key
 from generate_file_md5 import generate_file_md5
 
@@ -33,7 +36,7 @@ def run():
     parser.add_argument('-l','--list', help='file with list of ftp addresses', required=True, default="test")
     parser.add_argument('-a','--access_key', help='access key')
     parser.add_argument('-s','--secret_key', help='secret key')
-    parser.add_argument('-g','--gateway', help='s3 host/gateway', default='griffin-objstore.opensciencedatacloud.org')
+    parser.add_argument('-g','--gateway', help='s3 host/gateway', default='griffin-objstore.opensciencedatacloud.org') # s3.amazonaws.com
     parser.add_argument('-b','--bucket_name', help='bucket name', default='1000_genome_exome')
     parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
     parser.add_argument('-k', '--md5_ref_dictionary', help='provide a list ( name \t md5 ) to compare against', default=0)
@@ -228,13 +231,14 @@ def check_md5_and_size(
 
 
 def upload_file(file_name, bucket_name, gateway, debug=True, stats={}):
+    print ("SUB :: uploading :: " + file_name)            #### upload to s4
+    tic = time.time()
+    key_name = os.path.basename(file_name)
     if debug==True:
         print 'UPLOAD::FILENAME: ' + file_name
         print 'UPLOAD::BUCKET:   ' + bucket_name
         print 'UPLOAD::GATEWAY   ' + gateway
-    print ("SUB :: uploading :: " + file_name)            #### upload to s4
-    tic = time.time()
-    key_name = os.path.basename(file_name)
+        print 'UPLOAD::KEY       ' + key_name
     status = subprocess.call(['aws', 's3', 'cp', file_name, 's3://{}/{}'.format(bucket_name, key_name), '--endpoint-url', 'https://'+gateway], env=os.environ)
     ulTime = time.time() - tic
     stats['upload_time'] = ulTime
