@@ -93,7 +93,7 @@ def run():
     sample=0
     metrics = {}
     try:
-        process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary)
+        process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, debug=args.debug)
     finally:
         with open(status_file, 'w') as f:
             final_status['succeed_files'] = list(set(final_status['succeed_files']))
@@ -106,12 +106,14 @@ def get_stats_func(stats):
     return get_stats
 
 
-def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary):
+def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, debug):
 
     with open(args.list) as f:
         for my_line in f:
             splitLine = my_line.split("/")
             my_file_name = splitLine[ len(splitLine) - 1 ].strip()
+            if debug==True:
+                print 'FILENAME: ' + my_file_name
             if my_file_name in final_status['succeed_files']:
                 print "File {} already processed, skipping".format(my_file_name)
                 continue
@@ -170,10 +172,9 @@ def ftp_download(line, LOGFILE, file_name, debug, force_download, stats={}):
     if debug==True:
         print "SUB :: FILE_NAME: " + file_name
     if not force_download and os.path.exists(file_name):
-        if debug:
+        if debug==True:
             print "SUB :: File {} exists, skip downloading from ftp".format(file_name)
         return 0, 0
-
     line = line.rstrip("\n")
     if debug==True:
         print("SUB :: Length line :: " + str(len(line))  )
@@ -195,7 +196,6 @@ def ftp_download(line, LOGFILE, file_name, debug, force_download, stats={}):
             #LOGFILE.write(log_string)
             #LOGFILE.flush()
             stats['download_time'] = dlTime
-
     return wget_status, dlTime
 
 
@@ -228,14 +228,16 @@ def check_md5_and_size(
 
 
 def upload_file(file_name, bucket_name, gateway, debug=True, stats={}):
+    if debug==True:
+        print 'UPLOAD::FILENAME: ' + file_name
+        print 'UPLOAD::BUCKET:   ' + bucket_name
+        print 'UPLOAD::GATEWAY   ' + gateway
     print ("SUB :: uploading :: " + file_name)            #### upload to s4
     tic = time.time()
     key_name = os.path.basename(file_name)
     status = subprocess.call(['aws', 's3', 'cp', file_name, 's3://{}/{}'.format(bucket_name, key_name), '--endpoint-url', 'https://'+gateway], env=os.environ)
-    
     ulTime = time.time() - tic
     stats['upload_time'] = ulTime
-
     return status, ulTime
 
 

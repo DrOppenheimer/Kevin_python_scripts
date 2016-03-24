@@ -130,7 +130,7 @@ def download_without_parcel(urls, pattern, debug):
                 print download_string + "\n" 
             os.system(download_string)
             # download the file
-            print("Download of " + str(filename) + " is complete")
+            print("NON-Parcel Download of " + str(filename) + " is complete")
             exit(0)
 
 # SUB to download with parcel            
@@ -166,7 +166,7 @@ def download_with_parcel(urls, pattern, remoteparcelip, parcelport, debug):
                     print download_string + "\n"
                 # download the file
                 os.system(download_string)
-                print("Download of " + str(filename) + " is complete")
+                print("Parcel Download of " + str(filename) + " is complete")
                 exit(0)
             
 if __name__ == '__main__':
