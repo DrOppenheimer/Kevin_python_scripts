@@ -233,12 +233,13 @@ def check_md5_and_size(
 def upload_file(file_name, bucket_name, gateway, debug=True, stats={}):
     print ("SUB :: uploading :: " + file_name)            #### upload to s4
     tic = time.time()
-    key_name = os.path.basename(file_name)
+    #key_name = os.path.basename(file_name)
+    key_name = file_name
     if debug==True:
         print 'UPLOAD::FILENAME: ' + file_name
         print 'UPLOAD::BUCKET:   ' + bucket_name
-        print 'UPLOAD::GATEWAY   ' + gateway
-        print 'UPLOAD::KEY       ' + key_name
+        print 'UPLOAD::GATEWAY:  ' + gateway
+        print 'UPLOAD::KEY:      ' + key_name
     status = subprocess.call(['aws', 's3', 'cp', file_name, 's3://{}/{}'.format(bucket_name, key_name), '--endpoint-url', 'https://'+gateway], env=os.environ)
     ulTime = time.time() - tic
     stats['upload_time'] = ulTime
