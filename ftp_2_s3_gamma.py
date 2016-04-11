@@ -65,7 +65,11 @@ def run():
         os.environ['http_proxy'] = 'http://cloud-proxy:3128'
         os.environ['https_proxy'] = 'http://cloud-proxy:3128'
         os.environ['ftp_proxy'] = 'http://cloud-proxy:3128'
-
+    else:
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+        del os.environ['ftp_proxy']
+        
     # optional, you can also put secrets in {HOME}/aws/.credentials
     if args.access_key:
         os.environ['AWS_ACCESS_KEY_ID'] = args.access_key
