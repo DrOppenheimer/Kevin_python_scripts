@@ -11,6 +11,22 @@
 # 
 # 
 
+# make sure that the awscli package is installed this way 
+# pip install awscli
+# and run
+# aws config
+# should use ~/.aws/credentials -- but looks like it just use ~/.aws/config
+
+# when you do this -- keys will be in that file, and you won't have to supply -a or -s
+
+# Make sure that python scripts are in the path for sourcing
+# import sys
+# sys.path.append('/home/ubuntu/git/Kevin_python_scripts')
+# import multipart_upload
+# OR
+# add this to ~/.bashrc and source
+# export PYTHONPATH=$PYTHONPATH:/home/ubuntu/git/Kevin_python_scripts
+
 import sys
 import json
 import mmap
@@ -145,7 +161,10 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                                 cleanup_files(my_file_name)
                                 final_status['succeed_files'].append(my_file_name)
                                 break
+                        else:
+                            print "UPLOAD FAILED"
                     else:
+                        print "FTP DOWNLOAD FAIL"
                         cleanup_files(my_file_name)
                 else:
                     cleanup_files(my_file_name)
@@ -233,13 +252,12 @@ def check_md5_and_size(
 def upload_file(file_name, bucket_name, gateway, debug=True, stats={}):
     print ("SUB :: uploading :: " + file_name)            #### upload to s4
     tic = time.time()
-    #key_name = os.path.basename(file_name)
-    key_name = file_name
+    key_name = os.path.basename(file_name)
     if debug==True:
-        print 'UPLOAD::FILENAME: ' + file_name
-        print 'UPLOAD::BUCKET:   ' + bucket_name
-        print 'UPLOAD::GATEWAY:  ' + gateway
-        print 'UPLOAD::KEY:      ' + key_name
+        print 'TYPE UPLOAD::FILENAME: ' + type(file_name)
+        print 'TYPE UPLOAD::BUCKET:   ' + type(bucket_name)
+        print 'TYPE UPLOAD::GATEWAY:  ' + type(gateway)
+        print 'TYPE UPLOAD::KEY:      ' + type(key_name)
     status = subprocess.call(['aws', 's3', 'cp', file_name, 's3://{}/{}'.format(bucket_name, key_name), '--endpoint-url', 'https://'+gateway], env=os.environ)
     ulTime = time.time() - tic
     stats['upload_time'] = ulTime
