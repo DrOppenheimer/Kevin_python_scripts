@@ -267,10 +267,10 @@ def upload_file(file_name, bucket_name, gateway, proxy, debug=True, stats={}):
     tic = time.time()
     key_name = os.path.basename(file_name)
     if debug==True:
-        print 'TYPE UPLOAD::FILENAME: ' + type(file_name)
-        print 'TYPE UPLOAD::BUCKET:   ' + type(bucket_name)
-        print 'TYPE UPLOAD::GATEWAY:  ' + type(gateway)
-        print 'TYPE UPLOAD::KEY:      ' + type(key_name)
+        print 'TYPE UPLOAD::FILENAME: ' + str(type(file_name))
+        print 'TYPE UPLOAD::BUCKET:   ' + str(type(bucket_name))
+        print 'TYPE UPLOAD::GATEWAY:  ' + str(type(gateway))
+        print 'TYPE UPLOAD::KEY:      ' + str(type(key_name))
     status = subprocess.call(['aws', 's3', 'cp', file_name, 's3://{}/{}'.format(bucket_name, key_name), '--endpoint-url', 'https://'+gateway], env=os.environ)
     ulTime = time.time() - tic
     stats['upload_time'] = ulTime
