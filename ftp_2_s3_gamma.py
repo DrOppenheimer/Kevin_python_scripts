@@ -167,11 +167,11 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                                 break
                         else:
                             print "UPLOAD FAILED"
-                            sys.exit(1)
+                            #sys.exit(1)
                     else:
                         print "FTP DOWNLOAD FAIL"
-                        # cleanup_files(my_file_name)
-                        sys.exit(1) 
+                        #cleanup_files(my_file_name)
+                        #sys.exit(1) 
                 else:
                     cleanup_files(my_file_name)
             metrics[my_file_name] = stats
