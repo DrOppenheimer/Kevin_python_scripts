@@ -170,7 +170,7 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                             #sys.exit(1)
                     else:
                         print "FTP DOWNLOAD FAIL"
-                        #cleanup_files(my_file_name)
+                        cleanup_files(my_file_name)
                         #sys.exit(1) 
                 else:
                     cleanup_files(my_file_name)
