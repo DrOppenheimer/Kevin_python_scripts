@@ -45,9 +45,6 @@ except:
 from boto.s3.key import Key
 from generate_file_md5 import generate_file_md5
 
-my_proxy='http://cloud-proxy:3128'
-
-
 def run():
     parser = argparse.ArgumentParser(description='Simple script to perform a boto download')
     parser.add_argument('-l','--list', help='file with list of ftp addresses', required=True, default="test")
@@ -57,13 +54,12 @@ def run():
     parser.add_argument('-b','--bucket_name', help='bucket name', default='1000_genome_exome')
     parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
     parser.add_argument('-k', '--md5_ref_dictionary', help='provide a list ( name \t md5 ) to compare against', default=0)
-    #parser.add_argument('-p', '--proxy', action="store_true", help='run using \"with_proxy\"')
+    #parser.add_argument('-p', '--proxy', action="store_true", help='proxy to use for the download')
+    parser.add_argument('-p', '--my_proxy', default='http://cloud-proxy:3128', help='proxy to use for the download')
     parser.add_argument('-d', '--debug', action="store_true", help='run in debug mode')
     parser.add_argument('-sf', '--status_file', help='file to store download status')
     parser.add_argument('-fd', '--force-download', action="store_true", help='force to download even if file exists')
     args = parser.parse_args()
-
-    
 
     #else:
     #    del os.environ['http_proxy']
@@ -150,7 +146,7 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                 print("MAIN :: STARTING download and upload attempt ( " + str(my_attempt) + " ) for " + my_file_name)
                 (ftp_status, download_time) = ftp_download(
                     line=my_line, LOGFILE=LOGFILE, file_name=my_file_name, 
-                    debug=args.debug, force_download=args.force_download, my_proxy=my_proxy,
+                    debug=args.debug, force_download=args.force_download, my_proxy=args.my_proxy,
                     stats=stats)
                 if ftp_status == 0:
                     dl_md5_check = check_md5_and_size(my_file_name, my_md5_ref_dictionary, stats=stats)
