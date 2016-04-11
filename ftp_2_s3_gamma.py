@@ -155,7 +155,7 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                 if ftp_status == 0:
                     dl_md5_check = check_md5_and_size(my_file_name, my_md5_ref_dictionary, stats=stats)
                     if dl_md5_check == "md5_PASS":
-                        status, upload_time = upload_file(my_file_name, args.bucket_name, args.gateway, stats=stats, debug=args.debug)
+                        status, upload_time = upload_file(my_file_name, args.bucket_name, args.gateway, stats=stats, debug=args.debug, proxy=args.proxy)
                         if status == 0:
                             (status, check_time) = check_uploaded_file(my_file_name, args.bucket_name,
                                 args.gateway,
@@ -252,8 +252,11 @@ def check_md5_and_size(
     stats['{}_size'.format(action)] = dlSize
     return dl_md5_check
 
-
-def upload_file(file_name, bucket_name, gateway, debug=True, stats={}):
+def upload_file(file_name, bucket_name, gateway, debug=True, stats={}, proxy):
+    if args.proxy: # delete the proxy vars for the upload
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+        del os.environ['ftp_proxy']
     print ("SUB :: uploading :: " + file_name)            #### upload to s4
     tic = time.time()
     key_name = os.path.basename(file_name)
@@ -266,6 +269,20 @@ def upload_file(file_name, bucket_name, gateway, debug=True, stats={}):
     ulTime = time.time() - tic
     stats['upload_time'] = ulTime
     return status, ulTime
+
+#def upload_file(file_name, bucket_name, gateway, debug=True, stats={}):
+#    print ("SUB :: uploading :: " + file_name)            #### upload to s4
+#    tic = time.time()
+#    key_name = os.path.basename(file_name)
+#    if debug==True:
+#        print 'TYPE UPLOAD::FILENAME: ' + type(file_name)
+#        print 'TYPE UPLOAD::BUCKET:   ' + type(bucket_name)
+#        print 'TYPE UPLOAD::GATEWAY:  ' + type(gateway)
+#        print 'TYPE UPLOAD::KEY:      ' + type(key_name)
+#    status = subprocess.call(['aws', 's3', 'cp', file_name, 's3://{}/{}'.format(bucket_name, key_name), '--endpoint-url', 'https://'+gateway], env=os.environ)
+#    ulTime = time.time() - tic
+#    stats['upload_time'] = ulTime
+#    return status, ulTime
 
 
 def check_uploaded_file(file_name, bucket_name, gateway,
