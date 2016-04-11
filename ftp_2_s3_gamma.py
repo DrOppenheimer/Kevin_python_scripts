@@ -256,9 +256,11 @@ def check_md5_and_size(
         stats['reference_md5'] = ref_md5
         stats['{}_md5'.format(action)] = dlFileMd5
         stats['{}_size'.format(action)] = dlSize
+        print "md5_check :: " + dl_md5_check
         return dl_md5_check
     else:
         dl_md5_check = "md5_NA"
+        print "md5_check :: " + dl_md5_check 
         return dl_md5_check
         
 def upload_file(file_name, bucket_name, gateway, debug=True, stats={}):
