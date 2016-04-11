@@ -252,7 +252,7 @@ def check_md5_and_size(
     stats['{}_size'.format(action)] = dlSize
     return dl_md5_check
 
-def upload_file(file_name, bucket_name, gateway, debug=True, stats={}, proxy):
+def upload_file(file_name, bucket_name, gateway, debug=True, stats={}, debug, proxy):
     if args.proxy: # delete the proxy vars for the upload
         del os.environ['http_proxy']
         del os.environ['https_proxy']
