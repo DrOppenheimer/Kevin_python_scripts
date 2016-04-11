@@ -145,6 +145,7 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                     print("MAIN :: Bucket_name: " + args.bucket_name)
                 time.sleep(1)
                 print("MAIN :: STARTING download and upload attempt ( " + str(my_attempt) + " ) for " + my_file_name)
+                print("MAIN :: STARTING download")
                 (ftp_status, download_time) = ftp_download(
                     line=my_line, LOGFILE=LOGFILE, file_name=my_file_name, 
                     debug=args.debug, force_download=args.force_download, my_proxy=args.my_proxy,
@@ -152,6 +153,7 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                 if ftp_status == 0:
                     dl_md5_check = check_md5_and_size(my_file_name, my_md5_ref_dictionary, stats=stats)
                     if dl_md5_check == "md5_PASS" or dl_md5_check == "md5_NA":
+                        print("MAIN :: STARTING upload")
                         status, upload_time = upload_file(my_file_name, args.bucket_name, args.gateway, stats=stats)
                         if status == 0:
                             (status, check_time) = check_uploaded_file(my_file_name, args.bucket_name,
@@ -162,8 +164,8 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                                 cleanup_files(my_file_name)
                                 final_status['succeed_files'].append(my_file_name)
                                 break
-                        else:
-                            print "UPLOAD FAILED"
+                            else:
+                                print "UPLOAD FAILED"
                             #sys.exit(1)
                     else:
                         print "FTP DOWNLOAD FAIL"
