@@ -131,6 +131,7 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
         for my_line in f:
             splitLine = my_line.split("/")
             my_file_name = splitLine[ len(splitLine) - 1 ].strip()
+            cleanup_files(my_file_name) # delete if alreay there
             if debug==True:
                 print 'FILENAME: ' + my_file_name
             if my_file_name in final_status['succeed_files']:
