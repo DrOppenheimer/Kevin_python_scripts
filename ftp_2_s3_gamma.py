@@ -150,7 +150,7 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                 print("MAIN :: STARTING download and upload attempt ( " + str(my_attempt) + " ) for " + my_file_name)
                 (ftp_status, download_time) = ftp_download(
                     line=my_line, LOGFILE=LOGFILE, file_name=my_file_name, 
-                    debug=args.debug, force_download=args.force_download, my_proxy=my_proxy
+                    debug=args.debug, force_download=args.force_download, my_proxy=my_proxy,
                     stats=stats)
                 if ftp_status == 0:
                     dl_md5_check = check_md5_and_size(my_file_name, my_md5_ref_dictionary, stats=stats)
