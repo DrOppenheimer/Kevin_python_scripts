@@ -227,37 +227,34 @@ def ftp_download(line, LOGFILE, file_name, debug, force_download, my_proxy, stat
 
 
 def check_md5_and_size(
-        file_name, md5_ref_dictionary, debug=True, stats={},
-        action='download', key_name=''):
+    file_name, md5_ref_dictionary, debug=True, stats={}, action='download', key_name=''):
     if not key_name:
         key_name = file_name
     print ("SUB :: calculating dl md5 :: " + file_name)   #### get md5 for file downloaded from ftp
-    if md5_ref_dictionary!=0:
-        dlFileMd5, dlSize = generate_file_md5(file_name)    # uses function generate_file_md5 -- in your scripts
-        if debug == True:
-            print( "SUB :: " + file_name + " :: FTP_MD5 :: " + dlFileMd5  )
-        if md5_ref_dictionary != 0:                       ### Option to check against reference md5
-            ref_md5 = get_value(my_key=key_name, my_dictionary=md5_ref_dictionary)
-            if debug == True:
-                print( "SUB :: " + file_name + " :: REF_MD5 :: " + str(ref_md5)  )
-            if dlFileMd5 == ref_md5:
-                dl_md5_check = "md5_PASS"
-            else:
-                dl_md5_check = "md5_FAIL"
+    #if md5_ref_dictionary!=0:
+    dlFileMd5, dlSize = generate_file_md5(file_name)    # uses function generate_file_md5 -- in your scripts
+    if debug == True:
+        print( "SUB :: " + file_name + " :: FTP_MD5 :: " + dlFileMd5  )
+    if md5_ref_dictionary != 0:                       ### Option to check against reference md5
+        ref_md5 = get_value(my_key=key_name, my_dictionary=md5_ref_dictionary)
+        if dlFileMd5 == ref_md5:
+            dl_md5_check = "md5_PASS"
         else:
-            ref_md5 = "NA"
-            dl_md5_check = "NA"
-        if debug==True:
-            print("SUB :: " + file_name + " :: dl_size :: " + str(dlSize))
-        stats['reference_md5'] = ref_md5
-        stats['{}_md5'.format(action)] = dlFileMd5
-        stats['{}_size'.format(action)] = dlSize
-        print "md5_check :: " + dl_md5_check
-        return dl_md5_check
+            dl_md5_check = "md5_FAIL"
     else:
         dl_md5_check = "md5_NA"
-        print "md5_check :: " + dl_md5_check 
-        return dl_md5_check
+    if debug == True:
+        print( "SUB :: " + file_name + " :: REF_MD5 :: " + str(ref_md5)  )
+    #else:
+    #    ref_md5 = "NA"
+    #    dl_md5_check = "NA"
+    #    if debug==True:
+    #        print("SUB :: " + file_name + " :: dl_size :: " + str(dlSize))
+    stats['reference_md5'] = ref_md5
+    stats['{}_md5'.format(action)] = dlFileMd5
+    stats['{}_size'.format(action)] = dlSize
+    print "md5_check :: " + dl_md5_check
+    return dl_md5_check
         
 def upload_file(file_name, bucket_name, gateway, debug=True, stats={}):
     del os.environ['http_proxy'] # do not use the proxy for upload -- assume it's a local transfer
