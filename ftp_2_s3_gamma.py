@@ -154,7 +154,8 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                     dl_md5_check = check_md5_and_size(my_file_name, my_md5_ref_dictionary, stats=stats)
                     if dl_md5_check == "md5_PASS" or dl_md5_check == "md5_NA":
                         print("MAIN :: STARTING upload")
-                        status, upload_time = upload_file(my_file_name, args.bucket_name, args.gateway, stats=stats)
+                        #file_name, bucket_name, gateway, debug=True, stats={}
+                        status, upload_time = upload_file(file_name=my_file_name, bucket_name=args.bucket_name, gateway=args.gateway, debug=True, stats=stats)
                         if status == 0:
                             (status, check_time) = check_uploaded_file(my_file_name, args.bucket_name,
                                 args.gateway,
@@ -260,7 +261,7 @@ def check_md5_and_size(
     print "md5_check :: " + dl_md5_check
     return dl_md5_check
         
-def upload_file(file_name, bucket_name, gateway, debug=True, stats={}):
+def upload_file(file_name, bucket_name, gateway, debug, stats={}):
     del os.environ['http_proxy'] # do not use the proxy for upload -- assume it's a local transfer
     del os.environ['https_proxy']
     del os.environ['ftp_proxy']
