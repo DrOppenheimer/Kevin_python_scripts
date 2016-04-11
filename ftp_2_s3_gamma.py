@@ -256,6 +256,7 @@ def check_md5_and_size(
         return dl_md5_check
     else:
         dl_md5_check = "md5_NA"
+        return dl_md5_check
         
 def upload_file(file_name, bucket_name, gateway, proxy, debug=True, stats={}):
     if proxy: # delete the proxy vars for the upload
