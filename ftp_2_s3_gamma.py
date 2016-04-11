@@ -242,6 +242,7 @@ def check_md5_and_size(
         else:
             dl_md5_check = "md5_FAIL"
     else:
+        ref_md5 = "NA"
         dl_md5_check = "md5_NA"
     if debug == True:
         print( "SUB :: " + file_name + " :: REF_MD5 :: " + str(ref_md5)  )
