@@ -197,9 +197,12 @@ def get_value(my_key, my_dictionary):
         return ("key does not exist")
 
 def ftp_download(line, LOGFILE, file_name, debug, force_download, my_proxy, stats={}):
-    os.environ['http_proxy'] = my_proxy # assume remote location for ftp - so use proxy for the dl
-    os.environ['https_proxy'] = my_proxy
-    os.environ['ftp_proxy'] = my_proxy
+    if ('http_proxy' in os.environ)==False: # use the proxy for the download from FTP
+        os.environ['http_proxy'] = my_proxy 
+    if ('https_proxy' in os.environ)==False:
+        os.environ['https_proxy'] = my_proxy
+    if ('ftp_proxy' in os.environ)==False:
+        os.environ['ftp_proxy'] = my_proxy  
     if debug==True:
         print "SUB :: FILE_NAME: " + file_name
     if not force_download and os.path.exists(file_name):
@@ -227,6 +230,7 @@ def ftp_download(line, LOGFILE, file_name, debug, force_download, my_proxy, stat
             #LOGFILE.write(log_string)
             #LOGFILE.flush()
             stats['download_time'] = dlTime
+            print("SUB :: DOWNLOAD TIME :: " + str(dlTime))
     return wget_status, dlTime
 
 
@@ -262,20 +266,24 @@ def check_md5_and_size(
     return dl_md5_check
         
 def upload_file(file_name, bucket_name, gateway, debug, stats={}):
-    del os.environ['http_proxy'] # do not use the proxy for upload -- assume it's a local transfer
-    del os.environ['https_proxy']
-    del os.environ['ftp_proxy']
+    if 'http_proxy' in os.environ: # do not use the proxy for upload -- assume it's a local transfer (delete from environment)
+        del os.environ['http_proxy'] 
+    if 'https_proxy' in os.environ:
+        del os.environ['https_proxy']
+    if 'ftp_proxy' in os.environ:
+        del os.environ['ftp_proxy']
     print ("SUB :: uploading :: " + file_name)            #### upload to s4
     tic = time.time()
     key_name = os.path.basename(file_name)
-    if debug==True:
-        print 'TYPE UPLOAD::FILENAME: ' + str( type(file_name) )
-        print 'TYPE UPLOAD::BUCKET:   ' + str( type(bucket_name) )
-        print 'TYPE UPLOAD::GATEWAY:  ' + str( type(gateway) )
-        print 'TYPE UPLOAD::KEY:      ' + str( type(key_name) )
+    #if debug==True:
+    #    print 'TYPE UPLOAD::FILENAME: ' + str( type(file_name) )
+    #    print 'TYPE UPLOAD::BUCKET:   ' + str( type(bucket_name) )
+    #    print 'TYPE UPLOAD::GATEWAY:  ' + str( type(gateway) )
+    #    print 'TYPE UPLOAD::KEY:      ' + str( type(key_name) )
     status = subprocess.call(['aws', 's3', 'cp', file_name, 's3://{}/{}'.format(bucket_name, key_name), '--endpoint-url', 'https://'+gateway], env=os.environ)
     ulTime = time.time() - tic
     stats['upload_time'] = ulTime
+    print("SUB :: UPLOAD TIME :: " + str(ulTime))
     return status, ulTime
 
 #def upload_file(file_name, bucket_name, gateway, debug=True, stats={}):
