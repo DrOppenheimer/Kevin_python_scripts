@@ -29,31 +29,29 @@
 
 import os
 os.environ['PYTHONPATH']='/home/ubuntu/git/Kevin_python_scripts' # add path to pythonpath
-
 import sys
 import json
 import mmap
 import logging
 import argparse
-
 import time
 import hashlib
 import subprocess
 import boto
 import boto.s3.connection
+from boto.s3.key import Key
+from generate_file_md5 import generate_file_md5
 try:
     import multipart_upload # make sure is in PYTHONPATH
 except:
     print 'multipart_upload did not import -- is the script in PYTHONPATH?'
-    exit(1)    
-from boto.s3.key import Key
-from generate_file_md5 import generate_file_md5
+    sys.exit(1)    
 
 def run():
     parser = argparse.ArgumentParser(description='Simple script to perform a boto download')
-    parser.add_argument('-l','--list', help='file with list of ftp addresses', required=True, default="test")
-    parser.add_argument('-a','--access_key', required=True, help='access key')
-    parser.add_argument('-s','--secret_key', required=True, help='secret key')
+    parser.add_argument('-l','--list', help='file with list of ftp addresses', default="test")
+    parser.add_argument('-a','--access_key', help='access key')
+    parser.add_argument('-s','--secret_key', help='secret key')
     parser.add_argument('-g','--gateway', help='s3 host/gateway', default='griffin-objstore.opensciencedatacloud.org') # s3.amazonaws.com
     parser.add_argument('-b','--bucket_name', help='bucket name', default='1000_genome_exome')
     parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
@@ -161,6 +159,7 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                         print("MAIN :: STARTING upload")
                         #file_name, bucket_name, gateway, debug=True, stats={}
                         status, upload_time = upload_file(access_key=args.access_key, secret_key=args.secret_key, file_name=my_file_name, bucket_name=args.bucket_name, gateway=args.gateway, debug=True, stats=stats)
+                        #status, upload_time = upload_file(access_key=access_key,      secret_key=secret_key,      file_name=file_name,    bucket_name=bucket_name,      gateway=gateway,      debug=True, stats=stats)
                         if status == 0:
                             (status, check_time) = check_uploaded_file(my_file_name, args.bucket_name,
                                 args.gateway,
