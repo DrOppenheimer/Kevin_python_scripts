@@ -55,7 +55,7 @@ def run():
     parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
     parser.add_argument('-k', '--md5_ref_dictionary', help='provide a list ( name \t md5 ) to compare against', default=0)
     #parser.add_argument('-p', '--proxy', action="store_true", help='proxy to use for the download')
-    parser.add_argument('-p', '--my_proxy', default='http://cloud-proxy:3128', help='proxy to use for the download')
+    parser.add_argument('-p', '--my_proxy', default='http://cloud-proxy:3128', help='proxy to use for the download (upload is assumed local and does not use proxy)')
     parser.add_argument('-d', '--debug', action="store_true", help='run in debug mode')
     parser.add_argument('-sf', '--status_file', help='file to store download status')
     parser.add_argument('-fd', '--force-download', action="store_true", help='force to download even if file exists')
