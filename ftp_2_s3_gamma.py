@@ -52,8 +52,8 @@ from generate_file_md5 import generate_file_md5
 def run():
     parser = argparse.ArgumentParser(description='Simple script to perform a boto download')
     parser.add_argument('-l','--list', help='file with list of ftp addresses', required=True, default="test")
-    parser.add_argument('-a','--access_key', help='access key')
-    parser.add_argument('-s','--secret_key', help='secret key')
+    parser.add_argument('-a','--access_key', required=True, help='access key')
+    parser.add_argument('-s','--secret_key', required=True, help='secret key')
     parser.add_argument('-g','--gateway', help='s3 host/gateway', default='griffin-objstore.opensciencedatacloud.org') # s3.amazonaws.com
     parser.add_argument('-b','--bucket_name', help='bucket name', default='1000_genome_exome')
     parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
@@ -70,11 +70,12 @@ def run():
     #    del os.environ['https_proxy']
     #    del os.environ['ftp_proxy']
         
-    # optional, you can also put secrets in {HOME}/aws/.credentials
-    if args.access_key:
-        os.environ['AWS_ACCESS_KEY_ID'] = args.access_key
-    if args.secret_key:
-        os.environ['AWS_SECRET_ACCESS_KEY'] = args.secret_key
+    # # optional, you can also put secrets in {HOME}/aws/.credentials
+    # if args.access_key:
+    #     os.environ['AWS_ACCESS_KEY_ID'] = args.access_key
+    # if args.secret_key:
+    #     os.environ['AWS_SECRET_ACCESS_KEY'] = args.secret_key
+    ### Took this out and replaced in the upload function below -- I always like to have these as command line arguments
 
     status_file = args.status_file if args.status_file else args.list + '_status.json'
     print status_file
@@ -159,7 +160,7 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                     if dl_md5_check == "md5_PASS" or dl_md5_check == "md5_NA":
                         print("MAIN :: STARTING upload")
                         #file_name, bucket_name, gateway, debug=True, stats={}
-                        status, upload_time = upload_file(file_name=my_file_name, bucket_name=args.bucket_name, gateway=args.gateway, debug=True, stats=stats)
+                        status, upload_time = upload_file(access_key=args.access_key, secret_key=args.secret_key, file_name=my_file_name, bucket_name=args.bucket_name, gateway=args.gateway, debug=True, stats=stats)
                         if status == 0:
                             (status, check_time) = check_uploaded_file(my_file_name, args.bucket_name,
                                 args.gateway,
@@ -269,7 +270,9 @@ def check_md5_and_size(
     print "md5_check :: " + dl_md5_check
     return dl_md5_check
         
-def upload_file(file_name, bucket_name, gateway, debug, stats={}):
+def upload_file(access_key, secret_key, file_name, bucket_name, gateway, debug, stats={}):
+    os.environ['AWS_ACCESS_KEY_ID'] = access_key
+    os.environ['AWS_SECRET_ACCESS_KEY'] = secret_key
     if 'http_proxy' in os.environ: # do not use the proxy for upload -- assume it's a local transfer (delete from environment)
         del os.environ['http_proxy'] 
     if 'https_proxy' in os.environ:
