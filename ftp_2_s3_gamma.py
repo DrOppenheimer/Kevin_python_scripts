@@ -27,12 +27,15 @@
 # add this to ~/.bashrc and source
 # export PYTHONPATH=$PYTHONPATH:/home/ubuntu/git/Kevin_python_scripts
 
+import os
+os.environ['PYTHONPATH']='/home/ubuntu/git/Kevin_python_scripts' # add path to pythonpath
+
 import sys
 import json
 import mmap
 import logging
 import argparse
-import os
+
 import time
 import hashlib
 import subprocess
@@ -41,7 +44,8 @@ import boto.s3.connection
 try:
     import multipart_upload # make sure is in PYTHONPATH
 except:
-    print 'multipart_upload did not import -- is the script in PYTHONPATH?'    
+    print 'multipart_upload did not import -- is the script in PYTHONPATH?'
+    exit(1)    
 from boto.s3.key import Key
 from generate_file_md5 import generate_file_md5
 
