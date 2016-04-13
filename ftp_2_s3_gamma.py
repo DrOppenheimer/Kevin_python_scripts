@@ -157,7 +157,7 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                     if dl_md5_check == "md5_PASS" or dl_md5_check == "md5_NA":
                         print("MAIN :: STARTING upload")
                         #file_name, bucket_name, gateway, debug=True, stats={}
-                        status, upload_time = upload_file(file_name=my_file_name, bucket_name=args.bucket_name, gateway=args.gateway, debug=True, stats=stats, my_environ=os.environ)
+                        status, upload_time = upload_file(file_name=my_file_name, bucket_name=args.bucket_name, gateway=args.gateway, debug=True, stats=stats)
                         #status, upload_time = upload_file(access_key=args.access_key, secret_key=args.secret_key, file_name=my_file_name, bucket_name=args.bucket_name, gateway=args.gateway, debug=True, stats=stats)
                         
                         if status == 0:
@@ -273,7 +273,7 @@ def check_md5_and_size(
     print "md5_check :: " + dl_md5_check
     return dl_md5_check
         
-def upload_file(file_name, bucket_name, gateway, debug, stats={}, my_environ):
+def upload_file(file_name, bucket_name, gateway, debug, stats={}):
     #os.environ['AWS_ACCESS_KEY_ID'] = access_key
     #os.environ['AWS_SECRET_ACCESS_KEY'] = secret_key
     #if 'http_proxy' in os.environ: # do not use the proxy for upload -- assume it's a local transfer (delete from environment)
@@ -290,7 +290,7 @@ def upload_file(file_name, bucket_name, gateway, debug, stats={}, my_environ):
     #    print 'TYPE UPLOAD::BUCKET:   ' + str( type(bucket_name) )
     #    print 'TYPE UPLOAD::GATEWAY:  ' + str( type(gateway) )
     #    print 'TYPE UPLOAD::KEY:      ' + str( type(key_name) )
-    status = subprocess.call(['aws', 's3', 'cp', file_name, 's3://{}/{}'.format(bucket_name, key_name), '--endpoint-url', 'https://'+gateway], env=my_environ)
+    status = subprocess.call(['aws', 's3', 'cp', file_name, 's3://{}/{}'.format(bucket_name, key_name), '--endpoint-url', 'https://'+gateway], env=os.environ)
     ulTime = time.time() - tic
     stats['upload_time'] = ulTime
     print("SUB :: UPLOAD TIME :: " + str(ulTime))
