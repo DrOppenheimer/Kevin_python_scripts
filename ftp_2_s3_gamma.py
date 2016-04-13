@@ -235,7 +235,11 @@ def ftp_download(line, LOGFILE, file_name, debug, force_download, my_proxy, stat
             #LOGFILE.flush()
             stats['download_time'] = dlTime
             print("SUB :: DOWNLOAD TIME :: " + str(dlTime))
+    del os.environ['http_proxy'] # delete the proxy vars before upload 
+    del os.environ['https_proxy']
+    del os.environ['ftp_proxy']
     return wget_status, dlTime
+    
 
 
 def check_md5_and_size(
@@ -272,12 +276,12 @@ def check_md5_and_size(
 def upload_file(file_name, bucket_name, gateway, debug, stats={}, my_environ):
     #os.environ['AWS_ACCESS_KEY_ID'] = access_key
     #os.environ['AWS_SECRET_ACCESS_KEY'] = secret_key
-    if 'http_proxy' in os.environ: # do not use the proxy for upload -- assume it's a local transfer (delete from environment)
-        del os.environ['http_proxy'] 
-    if 'https_proxy' in os.environ:
-        del os.environ['https_proxy']
-    if 'ftp_proxy' in os.environ:
-        del os.environ['ftp_proxy']
+    #if 'http_proxy' in os.environ: # do not use the proxy for upload -- assume it's a local transfer (delete from environment)
+    #    del os.environ['http_proxy'] 
+    #if 'https_proxy' in os.environ:
+    #    del os.environ['https_proxy']
+    #if 'ftp_proxy' in os.environ:
+    #    del os.environ['ftp_proxy']
     print ("SUB :: uploading :: " + file_name)            #### upload to s4
     tic = time.time()
     key_name = os.path.basename(file_name)
