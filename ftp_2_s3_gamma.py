@@ -233,9 +233,9 @@ def ftp_download(line, LOGFILE, file_name, debug, force_download, my_proxy, stat
     if wget_status !=0:
         remove_status=subprocess.call(["rm", file_name])
         if remove_status != 0:
-            #log_string = file_name + '\t' + " :: download and/or rm failed" + '\n'
-            #LOGFILE.write(log_string)
-            #LOGFILE.flush()
+            log_string = file_name + '\t' + " :: download and/or rm failed" + '\n'
+            LOGFILE.write(log_string)
+            LOGFILE.flush()
     stats['download_time'] = dlTime
     print("SUB :: DOWNLOAD TIME :: " + str(dlTime))
     del os.environ['http_proxy'] # delete the proxy vars before upload 
