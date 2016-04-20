@@ -129,6 +129,7 @@ def get_stats_func(stats):
 
 def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, debug):
 
+    file_count = 0
     with open(args.list) as f:
         for my_line in f:
             splitLine = my_line.split("/")
@@ -141,14 +142,15 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                 continue
             stats = {}
             stats['file_name'] = my_file_name
+            file_count += 1
             for my_attempt in xrange(args.retry):
                 if args.debug == True:
-                    print("MAIN :: Attempt " + str(my_attempt))
+                    print("MAIN :: Attempt ( " + str(my_attempt) + " ) :: Of file ( " + str(file_count) + " ) from list: " + str(args.list) )
                     print("MAIN :: Bucket_name: " + args.bucket_name)
                 time.sleep(1)
                 print("MAIN :: STARTING download and upload attempt ( " + str(my_attempt) + " ) for " + my_file_name)
                 print("MAIN :: STARTING download")
-                (ftp_status, download_time) = ftp_download(
+                ftp_status, download_time = ftp_download(
                     line=my_line, LOGFILE=LOGFILE, file_name=my_file_name, 
                     debug=args.debug, force_download=args.force_download, my_proxy=args.my_proxy,
                     stats=stats)
@@ -161,7 +163,7 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                         #status, upload_time = upload_file(access_key=args.access_key, secret_key=args.secret_key, file_name=my_file_name, bucket_name=args.bucket_name, gateway=args.gateway, debug=True, stats=stats)
                         
                         if status == 0:
-                            (status, check_time) = check_uploaded_file(my_file_name, args.bucket_name,
+                            status, check_time = check_uploaded_file(my_file_name, args.bucket_name,
                                 args.gateway,
                                 my_md5_ref_dictionary,
                                 debug=True, stats=stats)
@@ -191,7 +193,6 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
 
 
 
-
 def get_value(my_key, my_dictionary):
     if my_dictionary.has_key(my_key):
         my_value = my_dictionary.get(my_key)
@@ -200,6 +201,8 @@ def get_value(my_key, my_dictionary):
     else:        
         return ("key does not exist")
 
+
+    
 def ftp_download(line, LOGFILE, file_name, debug, force_download, my_proxy, stats={}):
     if ('http_proxy' in os.environ)==False: # use the proxy for the download from FTP
         os.environ['http_proxy'] = my_proxy 
@@ -233,8 +236,8 @@ def ftp_download(line, LOGFILE, file_name, debug, force_download, my_proxy, stat
             #log_string = file_name + '\t' + " :: download and/or rm failed" + '\n'
             #LOGFILE.write(log_string)
             #LOGFILE.flush()
-            stats['download_time'] = dlTime
-            print("SUB :: DOWNLOAD TIME :: " + str(dlTime))
+    stats['download_time'] = dlTime
+    print("SUB :: DOWNLOAD TIME :: " + str(dlTime))
     del os.environ['http_proxy'] # delete the proxy vars before upload 
     del os.environ['https_proxy']
     del os.environ['ftp_proxy']
