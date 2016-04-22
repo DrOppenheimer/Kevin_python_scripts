@@ -8,17 +8,18 @@ import re
 
 parser = argparse.ArgumentParser(description='Script to mint ARK ids - handles only simple case of ids for a single file - but with multiple urls')
 parser.add_argument('-l','--list', help='file with list of metadata filename\tsize_in_bytes\tmd5\turl1\turl...     ', required=True, default="test")
-parser.add_argument('-u','--user', help='user', required=True)
-parser.add_argument('-p','--password', help='password', required=True)
+parser.add_argument('-u','--user', help='user')
+parser.add_argument('-p','--password', help='password')
 parser.add_argument('-e','--endpoint', help='endpoint', default='https://signpost.opensciencedatacloud.org/')
-parser.add_argument('-k','--keeper', help='keeper authority', required=True)
-parser.add_argument('-o','--host', help='host authority', default='PDC')
+parser.add_argument('-k','--keeper', help='keeper authority', default='CRI')
+parser.add_argument('-r','--release', help='release', default='public')
+parser.add_argument('-o','--host', help='host authority', default='CDIS')
 parser.add_argument('-a','--ark', help='ark prefix', default='ark:/31807/DC2-')
 parser.add_argument('-d', '--debug', action="store_true", help='run in debug mode')
 args = parser.parse_args()
 
-# Create a coupe variables
-index_endpoint = args.endpoint +'index/'
+# Create a couple variables
+index_endpoint = args.endpoint + 'index/'
 alias_endpoint = args.endpoint + 'alias/'
 auth = (args.user, args.password)
 
@@ -70,7 +71,7 @@ with open(args.list) as f:
                 print output
 
             # create alias
-            data = {'size':file_size, 'hashes':{'md5':file_md5}, 'release': 'private', 'keeper_authority': args.keeper, 'host_authority':args.host}
+            data = {'size':file_size, 'hashes':{'md5':file_md5}, 'release':args.release, 'keeper_authority':args.keeper, 'host_authority':args.host}
             my_uuid = str(uuid.uuid4())
             ark = args.ark + my_uuid
             ark_url = alias_endpoint + ark
