@@ -23,7 +23,6 @@ index_endpoint = args.endpoint + 'index/'
 alias_endpoint = args.endpoint + 'alias/'
 auth = (args.user, args.password)
 
-
 # start log
 log = args.list +'.ARK_minter.log'
 LOGFILE = open('./' + log, 'w+')
@@ -81,7 +80,6 @@ with open(args.list) as f:
                 print "ALIAS OUTPUT:"
                 print output
                 
-            
             # print to log and stdout when a record is created
             if args.debug==True:
                 print "LINE         :: " + my_line

@@ -5,7 +5,7 @@
 
 
 import os
-os.environ['PYTHONPATH']='/home/ubuntu/git/Kevin_python_scripts' # add path to pythonpath
+os.environ['PYTHONPATH']='$PYTHONPATH:/home/ubuntu/git/Kevin_python_scripts' # add path to pythonpath
 import sys
 import json
 import mmap
@@ -25,7 +25,7 @@ except:
     sys.exit(1) 
 
 parser = argparse.ArgumentParser(description='Script to download objects in list from specified host/bucket -- calculate their size and md5 locally')
-parser.add_argument('-l','--list', help='file with list of ftp addresses', default="test")
+parser.add_argument('-l','--list', help='file with list of file names', default="test")
 parser.add_argument('-g','--gateway', help='gateway/host, griffin-objstore.opensciencedatacloud.org or s3.amazonaws.com', default='griffin-objstore.opensciencedatacloud.org')
 parser.add_argument('-b','--bucketName', help='Name fot the bucket', default='1000_genome_exome')
 parser.add_argument('-a','--accessKey', help='accesskey', required=True)
