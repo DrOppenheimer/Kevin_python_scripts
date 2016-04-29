@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# simple script to check filename, size, and md5 for list of files(objects) in buckeet
+# simple script to check filename, and size  (no md5) for list of files(objects) in buckeet
 # written to be run on AWS s3
 
 import os
@@ -11,7 +11,7 @@ from boto.s3.key import Key
 import boto.s3.connection
 
 parser = argparse.ArgumentParser(description='Script to mint ARK ids - handles only simple case of ids for a single file - but with multiple urls')
-parser.add_argument('-g','--gateway', help='gateway/host, amazon by default, specify any other', default='s3')
+parser.add_argument('-g','--gateway', help='gateway/host, amazon by default, specify any other', default='https://bionimbus-objstore.opensciencedatacloud.org')
 parser.add_argument('-b','--bucketName', help='file with list of metadata filename\tsize_in_bytes\tmd5\turl1\turl...     ', required=True)
 parser.add_argument('-a','--accessKey', help='user', required=True)
 parser.add_argument('-s','--secretKey', help='password', required=True)
