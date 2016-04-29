@@ -58,7 +58,7 @@ with open(args.list) as f:
             #is_secure=True,               # uncomment if you are not using ssl
             calling_format = boto.s3.connection.OrdinaryCallingFormat(),
         )
-        bucket = conn.create_bucket(args.bucketName)
+        bucket = conn.get_bucket(args.bucketName)
         key = bucket.get_key(my_file_name)
         tic = time.time()
         key.get_contents_to_filename(my_file_name)
