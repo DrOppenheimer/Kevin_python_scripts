@@ -58,6 +58,7 @@ def run():
     parser.add_argument('-k', '--md5_ref_dictionary', help='provide a list ( name \t md5 ) to compare against', default=0)
     #parser.add_argument('-p', '--proxy', action="store_true", help='proxy to use for the download')
     parser.add_argument('-p', '--my_proxy', default='http://cloud-proxy:3128', help='proxy to use for the download (upload is assumed local and does not use proxy)')
+    parser.add_argument('-pu', '--proxy_upload', action="store_true", help='use the proxy for upload')
     parser.add_argument('-d', '--debug', action="store_true", help='run in debug mode')
     parser.add_argument('-sf', '--status_file', help='file to store download status')
     parser.add_argument('-fd', '--force-download', action="store_true", help='force to download even if file exists')
@@ -277,6 +278,13 @@ def check_md5_and_size(
     return dl_md5_check
         
 def upload_file(file_name, bucket_name, gateway, debug, stats={}):
+    if (args.proxy_upload==True):
+        if ('http_proxy' in os.environ)==False: # use the proxy for the download from FTP
+            os.environ['http_proxy'] = my_proxy 
+        if ('https_proxy' in os.environ)==False:
+            os.environ['https_proxy'] = my_proxy
+        if ('ftp_proxy' in os.environ)==False:
+            os.environ['ftp_proxy'] = my_proxy
     #os.environ['AWS_ACCESS_KEY_ID'] = access_key
     #os.environ['AWS_SECRET_ACCESS_KEY'] = secret_key
     #if 'http_proxy' in os.environ: # do not use the proxy for upload -- assume it's a local transfer (delete from environment)
@@ -296,6 +304,10 @@ def upload_file(file_name, bucket_name, gateway, debug, stats={}):
     status = subprocess.call(['aws', 's3', 'cp', file_name, 's3://{}/{}'.format(bucket_name, key_name), '--endpoint-url', 'https://'+gateway], env=os.environ)
     ulTime = time.time() - tic
     stats['upload_time'] = ulTime
+    if (args.proxy_upload==True):
+        del os.environ['http_proxy'] # delete the proxy vars before upload 
+        del os.environ['https_proxy']
+        del os.environ['ftp_proxy']
     print("SUB :: UPLOAD TIME :: " + str(ulTime))
     return status, ulTime
 
