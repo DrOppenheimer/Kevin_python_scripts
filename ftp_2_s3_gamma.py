@@ -156,7 +156,7 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                     debug=args.debug, force_download=args.force_download, my_proxy=args.my_proxy,
                     stats=stats)
                 if ftp_status == 0: 
-                    dl_md5_check = check_md5_and_size(file_name=my_file_name, md5_ref_dictionary=args.md5_ref_dictionary, stats=stats)
+                    dl_md5_check = check_md5_and_size(file_name=my_file_name, md5_ref_dictionary=args.md5_ref_dictionary, key_name=my_file_name, stats=stats)
                     if dl_md5_check == "md5_PASS" or dl_md5_check == "md5_NA":
                         print("MAIN :: STARTING upload")
                         #file_name, bucket_name, gateway, debug=True, stats={}
