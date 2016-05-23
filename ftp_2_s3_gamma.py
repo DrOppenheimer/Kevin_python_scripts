@@ -55,7 +55,7 @@ def run():
     parser.add_argument('-g','--gateway', help='s3 host/gateway', default='griffin-objstore.opensciencedatacloud.org') # s3.amazonaws.com
     parser.add_argument('-b','--bucket_name', help='bucket name', default='1000_genome_exome')
     parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
-    parser.add_argument('-k', '--', help='provide a list ( name \t md5 ) to compare against', default=0)
+    parser.add_argument('-k', '--md5_ref_dictionary', help='provide a list ( name \t md5 ) to compare against', default=0)
     #parser.add_argument('-p', '--proxy', action="store_true", help='proxy to use for the download')
     parser.add_argument('-p', '--my_proxy', default='http://cloud-proxy:3128', help='proxy to use for the download (upload is assumed local and does not use proxy)')
     parser.add_argument('-pu', '--proxy_upload', action="store_true", help='use the proxy for upload')
