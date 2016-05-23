@@ -347,7 +347,7 @@ def check_uploaded_file(file_name, bucket_name, gateway, my_proxy, proxy_upload,
     cleanup_files(tmp_file)
     ulTime = time.time() - tic
     stats['redownload_time'] = ulTime
-     if (proxy_upload==True):
+    if (proxy_upload==True):
         del os.environ['http_proxy'] # delete the proxy vars before upload 
         del os.environ['https_proxy']
         del os.environ['ftp_proxy']
