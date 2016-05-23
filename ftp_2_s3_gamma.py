@@ -164,10 +164,7 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                         #status, upload_time = upload_file(access_key=args.access_key, secret_key=args.secret_key, file_name=my_file_name, bucket_name=args.bucket_name, gateway=args.gateway, debug=True, stats=stats)
                         
                         if status == 0:
-                            status, check_time = check_uploaded_file(my_file_name, args.bucket_name,  my_proxy=args.my_proxy, proxy_upload=args.proxy_upload,
-                                args.gateway,
-                                my_md5_ref_dictionary,
-                                debug=True, stats=stats)
+                            status, check_time = check_uploaded_file(file_name=my_file_name, bucket_name=args.bucket_name,  my_proxy=args.my_proxy, proxy_upload=args.proxy_upload, gateway=args.gateway, my_md5_ref_dictionary=args.md5_ref_dictionary, debug=True, stats=stats)
                             if status == 0:
                                 cleanup_files(my_file_name)
                                 final_status['succeed_files'].append(my_file_name)
@@ -326,8 +323,8 @@ def upload_file(file_name, bucket_name, gateway, my_proxy, proxy_upload, debug, 
 #    return status, ulTime
 
 
-def check_uploaded_file(file_name, bucket_name, gateway, my_proxy, proxy_upload,
-                        md5_ref_dictionary, debug=True, stats={}):
+
+def check_uploaded_file(file_name, bucket_name, my_proxy, proxy_upload, gateway, md5_ref_dictionary, debug=True, stats={}):
     if (proxy_upload==True):
         if ('http_proxy' in os.environ)==False: # use the proxy for the download from FTP
             os.environ['http_proxy'] = my_proxy 
