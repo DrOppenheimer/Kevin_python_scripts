@@ -55,7 +55,7 @@ def run():
     parser.add_argument('-g','--gateway', help='s3 host/gateway', default='griffin-objstore.opensciencedatacloud.org') # s3.amazonaws.com
     parser.add_argument('-b','--bucket_name', help='bucket name', default='1000_genome_exome')
     parser.add_argument('-r', '--retry', help='number of times to retry each download', default=10)
-    parser.add_argument('-k', '--md5_ref_dictionary', help='provide a list ( name \t md5 ) to compare against', default=0)
+    parser.add_argument('-k', '--', help='provide a list ( name \t md5 ) to compare against', default=0)
     #parser.add_argument('-p', '--proxy', action="store_true", help='proxy to use for the download')
     parser.add_argument('-p', '--my_proxy', default='http://cloud-proxy:3128', help='proxy to use for the download (upload is assumed local and does not use proxy)')
     parser.add_argument('-pu', '--proxy_upload', action="store_true", help='use the proxy for upload')
@@ -156,7 +156,7 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                     debug=args.debug, force_download=args.force_download, my_proxy=args.my_proxy,
                     stats=stats)
                 if ftp_status == 0: 
-                    dl_md5_check = check_md5_and_size(file_name=my_file_name, md5_ref_dictionary=args.md5_ref_dictionary, key_name=my_file_name, stats=stats)
+                    dl_md5_check = check_md5_and_size(file_name=my_file_name, md5_ref_dictionary=my_md5_ref_dictionary, stats=stats)
                     if dl_md5_check == "md5_PASS" or dl_md5_check == "md5_NA":
                         print("MAIN :: STARTING upload")
                         #file_name, bucket_name, gateway, debug=True, stats={}
@@ -164,7 +164,7 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                         #status, upload_time = upload_file(access_key=args.access_key, secret_key=args.secret_key, file_name=my_file_name, bucket_name=args.bucket_name, gateway=args.gateway, debug=True, stats=stats)
                         
                         if status == 0:
-                            status, check_time = check_uploaded_file(file_name=my_file_name, bucket_name=args.bucket_name,  my_proxy=args.my_proxy, proxy_upload=args.proxy_upload, gateway=args.gateway, my_md5_ref_dictionary=args.md5_ref_dictionary, debug=True, stats=stats)
+                            status, check_time = check_uploaded_file(file_name=my_file_name, bucket_name=args.bucket_name,  my_proxy=args.my_proxy, proxy_upload=args.proxy_upload, gateway=args.gateway, my_md5_ref_dictionary=my_md5_ref_dictionary, debug=True, stats=stats)
                             if status == 0:
                                 cleanup_files(my_file_name)
                                 final_status['succeed_files'].append(my_file_name)
