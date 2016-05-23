@@ -160,7 +160,7 @@ def process_file(args, LOGFILE, metrics, final_status, my_md5_ref_dictionary, de
                     if dl_md5_check == "md5_PASS" or dl_md5_check == "md5_NA":
                         print("MAIN :: STARTING upload")
                         #file_name, bucket_name, gateway, debug=True, stats={}
-                        status, upload_time = upload_file(file_name=my_file_name, bucket_name=args.bucket_name, gateway=args.gateway, debug=True, stats=stats)
+                        status, upload_time = upload_file(file_name=my_file_name, bucket_name=args.bucket_name, gateway=args.gateway, proxy_upload=args.proxy_upload, debug=True, stats=stats)
                         #status, upload_time = upload_file(access_key=args.access_key, secret_key=args.secret_key, file_name=my_file_name, bucket_name=args.bucket_name, gateway=args.gateway, debug=True, stats=stats)
                         
                         if status == 0:
@@ -277,8 +277,8 @@ def check_md5_and_size(
     print "md5_check :: " + dl_md5_check
     return dl_md5_check
         
-def upload_file(file_name, bucket_name, gateway, debug, stats={}):
-    if (args.proxy_upload==True):
+def upload_file(file_name, bucket_name, gateway, proxy_upload, debug, stats={}):
+    if (proxy_upload==True):
         if ('http_proxy' in os.environ)==False: # use the proxy for the download from FTP
             os.environ['http_proxy'] = my_proxy 
         if ('https_proxy' in os.environ)==False:
@@ -304,7 +304,7 @@ def upload_file(file_name, bucket_name, gateway, debug, stats={}):
     status = subprocess.call(['aws', 's3', 'cp', file_name, 's3://{}/{}'.format(bucket_name, key_name), '--endpoint-url', 'https://'+gateway], env=os.environ)
     ulTime = time.time() - tic
     stats['upload_time'] = ulTime
-    if (args.proxy_upload==True):
+    if (proxy_upload==True):
         del os.environ['http_proxy'] # delete the proxy vars before upload 
         del os.environ['https_proxy']
         del os.environ['ftp_proxy']
