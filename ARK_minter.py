@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import argparse
 import json
 import requests
@@ -11,12 +12,23 @@ parser.add_argument('-l','--list', help='file with list of metadata filename\tsi
 parser.add_argument('-u','--user', help='user')
 parser.add_argument('-p','--password', help='password')
 parser.add_argument('-e','--endpoint', help='endpoint', default='https://signpost.opensciencedatacloud.org/')
-parser.add_argument('-k','--keeper', help='keeper authority', default='CRI')
-parser.add_argument('-r','--release', help='release', default='public')
-parser.add_argument('-o','--host', help='host authority', default='CDIS')
+parser.add_argument('-k','--keeper', help='keeper authority - imports named env var', default="ORCIDID")
+parser.add_argument('-r','--release', help='release', default='private')
+parser.add_argument('-o','--host', help='host authority - imports named env var', default="HOST_AUTH")
 parser.add_argument('-a','--ark', help='ark prefix', default='ark:/31807/DC2-')
+parser.add_argument('-app','--append_ark', action="store_true", help='append the ARK prefix - expects input of filename\tsize_in_bytes\tmd5\tappend\turl1\turl...')
+parser.add_argument('-t', '--test', action="store_true", help='run in test mode')
 parser.add_argument('-d', '--debug', action="store_true", help='run in debug mode')
 args = parser.parse_args()
+
+# Import values that are env vars
+
+args.keeper = os.environ[args.keeper]
+args.host = os.environ[args.host]
+
+
+if args.test==True:
+    args.debug=True
 
 # Create a couple variables
 index_endpoint = args.endpoint + 'index/'
@@ -24,7 +36,10 @@ alias_endpoint = args.endpoint + 'alias/'
 auth = (args.user, args.password)
 
 # start log
-log = args.list +'.ARK_minter.log'
+if args.test==True:
+    log = args.list +'.ARK_minter.manifest.TEST.txt'
+else:
+    log = args.list +'.ARK_minter.manifest.txt'
 LOGFILE = open('./' + log, 'w+')
 
 counter = 0
@@ -55,30 +70,46 @@ with open(args.list) as f:
             file_name = splitline[ 0 ]
             file_size = int(splitline[ 1 ])
             file_md5 = splitline[2]
-            file_urls = []
-            for i in range(3, len(splitline), 1):
-                if args.debug==True:
-                    print("Length :: " + str(len(splitline)))
-                    print("Range  :: " + str(i))
-                file_urls.append(splitline[i])
-        
+            if args.append_ark==True:
+                file_append = str(splitline[3])
+                file_urls = []
+                for i in range(4, len(splitline), 1):
+                #for i in range(5, len(splitline), 1):
+                    if args.debug==True:
+                        print("Length :: " + str(len(splitline)))
+                        print("Range  :: " + str(i))
+                    file_urls.append(splitline[i])
+            else:
+                file_append = ''
+                file_urls = []
+                for i in range(3, len(splitline), 1):
+                #for i in range(4, len(splitline), 1):
+                    if args.debug==True:
+                        print("Length :: " + str(len(splitline)))
+                        print("Range  :: " + str(i))
+                    file_urls.append(splitline[i])
+                    
             # create index
             data={'form':'object', 'size':file_size, 'urls':file_urls, 'hashes':{'md5':file_md5}}
             output=requests.post(index_endpoint, json=data, auth=auth).json()
             if args.debug==True:
                 print "INDEX OUTPUT:"
-                print output
+                print json.dumps(data, indent=4, sort_keys=True)
 
             # create alias
             data = {'size':file_size, 'hashes':{'md5':file_md5}, 'release':args.release, 'keeper_authority':args.keeper, 'host_authority':args.host}
             my_uuid = str(uuid.uuid4())
-            ark = args.ark + my_uuid
-            ark_url = alias_endpoint + ark
+            if args.append_ark=='NA':
+                ark = args.ark + my_uuid
+            else:    
+                ark = args.ark + str(file_append) + my_uuid
+                ark_url = alias_endpoint + ark
             #output = requests.put(alias_endpoint+ark, json=data, auth=auth, proxies=proxies).json()
-            output = requests.put(alias_endpoint+ark, json=data, auth=auth).json()
+            if args.test!=True:
+                output = requests.put(alias_endpoint+ark, json=data, auth=auth).json()
             if args.debug==True:
                 print "ALIAS OUTPUT:"
-                print output
+                print json.dumps(data, indent=4, sort_keys=True)
                 
             # print to log and stdout when a record is created
             if args.debug==True:
@@ -86,6 +117,9 @@ with open(args.list) as f:
                 print "ENDPOINT     :: " + alias_endpoint
                 print "ARK          :: " + ark
                 print "ARK ENDPOINT :: " + alias_endpoint + ark
+                print "ARK JSON     ::"
+                
+            # update the log file        
             LOGFILE.write(my_line + '\t' + ark_url + '\n')
             LOGFILE.flush()
             print( 'completed ( ' + str(counter) + ' ) :: ' + file_name  )
